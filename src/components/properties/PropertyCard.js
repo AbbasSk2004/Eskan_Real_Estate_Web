@@ -24,7 +24,7 @@ const PropertyCard = ({
   const isMounted = useRef(true);
 
   const {
-    id,
+    id: rawId,
     title,
     price,
     main_image,
@@ -36,8 +36,11 @@ const PropertyCard = ({
     city,
     village,
     property_type,
-    profiles_id
+    profiles_id,
+    views_count
   } = property;
+
+  const id = rawId || property._id;
 
   // Check if the property belongs to the current user, handling both nested and flat user object structures
   const isOwnProperty = user?.id === profiles_id || user?.profile?.id === profiles_id;
@@ -45,21 +48,21 @@ const PropertyCard = ({
   useEffect(() => {
     const fetchViewCount = async () => {
       // Skip if we already have the view count or if it's already being fetched
-      if (typeof property.views_count === 'number' || viewCountRef.current === property.id) {
-        setViewCount(property.views_count || 0);
+      if (typeof views_count === 'number' || viewCountRef.current === id) {
+        setViewCount(views_count || 0);
         return;
       }
 
       try {
         setLoading(true);
         setError(null);
-        viewCountRef.current = property.id;
+        viewCountRef.current = id;
 
         // Create new abort controller
         abortController.current = new AbortController();
         
         // Get the view count without authentication
-        const count = await endpoints.propertyViews.getViewCount(property.id);
+        const count = await endpoints.propertyViews.getViewCount(id);
         
         if (isMounted.current) {
           setViewCount(count);
@@ -86,7 +89,7 @@ const PropertyCard = ({
         abortController.current.abort();
       }
     };
-  }, [property.id, property.views_count]);
+  }, [id, views_count]);
 
   const location = [village, city, governate].filter(Boolean).join(', ');
 

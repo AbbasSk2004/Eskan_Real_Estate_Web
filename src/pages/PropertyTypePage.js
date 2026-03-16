@@ -4,7 +4,7 @@ import PropertyList from '../components/properties/PropertyList';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { typePageService } from '../services/typepage';
 import { propertyService } from '../services/propertyService';
-import { PROPERTY_TYPES } from '../utils/propertyTypes';
+import { PROPERTY_TYPES } from '../utils/propertyTypeFields';
 import { useToast } from '../hooks/useToast';
 
 const PropertyTypePage = () => {

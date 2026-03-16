@@ -1,13 +1,25 @@
 import api from './api';
 
+const extractFaqArray = (response) => {
+  const payload = response?.data;
+
+  if (Array.isArray(payload)) return payload;
+  if (payload?.success && Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.faqs)) return payload.faqs;
+
+  return [];
+};
+
 export const faqService = {
   getAllFaqs: async () => {
     try {
       const response = await api.get('/faqs');
-      if (response.data.success) {
-        return response.data.data;
+      const data = extractFaqArray(response);
+      if (data.length === 0 && response?.data?.success === false) {
+        throw new Error(response?.data?.message || 'Failed to fetch FAQs');
       }
-      throw new Error(response.data.message || 'Failed to fetch FAQs');
+      return data;
     } catch (error) {
       console.error('Error in faqService.getAllFaqs:', error);
       throw error;
@@ -17,10 +29,11 @@ export const faqService = {
   getFeaturedFaqs: async () => {
     try {
       const response = await api.get('/faqs/featured');
-      if (response.data.success) {
-        return response.data.data;
+      const data = extractFaqArray(response);
+      if (data.length === 0 && response?.data?.success === false) {
+        throw new Error(response?.data?.message || 'Failed to fetch featured FAQs');
       }
-      throw new Error(response.data.message || 'Failed to fetch featured FAQs');
+      return data;
     } catch (error) {
       console.error('Error in faqService.getFeaturedFaqs:', error);
       throw error;
@@ -30,10 +43,11 @@ export const faqService = {
   getFaqsByCategory: async (category) => {
     try {
       const response = await api.get(`/faqs/category/${category}`);
-      if (response.data.success) {
-        return response.data.data;
+      const data = extractFaqArray(response);
+      if (data.length === 0 && response?.data?.success === false) {
+        throw new Error(response?.data?.message || 'Failed to fetch FAQs by category');
       }
-      throw new Error(response.data.message || 'Failed to fetch FAQs by category');
+      return data;
     } catch (error) {
       console.error('Error in faqService.getFaqsByCategory:', error);
       throw error;

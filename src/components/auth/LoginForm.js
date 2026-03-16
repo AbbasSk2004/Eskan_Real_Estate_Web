@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
-import authStorage from '../../utils/authStorage';
+
 import authService from '../../services/auth';
 import '../../assets/css/LoginForm.css';
 
@@ -37,34 +37,11 @@ const LoginForm = () => {
       setError('');
 
       const { email, password } = formData;
-      const { data: loginData } = await api.post('/auth/login', { email, password });
+      await login(email, password, formData.rememberMe);
 
-      if (loginData.success) {
-        // Store the token using authStorage
-        authStorage.setToken('access_token', loginData.token, formData.rememberMe);
-        
-        // Set auth header for future requests
-        api.defaults.headers.common['Authorization'] = `Bearer ${loginData.token}`;
-        
-        // Immediately mark the user as active – this covers the very first
-        // login call before AuthContext.login runs (which will log in again).
-        try {
-          await authService.updateStatus('active');
-          console.log('User status updated to active');
-        } catch (statusError) {
-          console.error('Failed to update status to active:', statusError);
-          // Non-blocking: continue with login flow
-        }
-        
-        // Call the login function from context
-        await login(email, password, formData.rememberMe);
-
-        // Get redirect path from location state or default to home
-        const from = location.state?.from?.pathname || '/';
-        navigate(from, { replace: true });
-      } else {
-        throw new Error(loginData.message || 'Login failed');
-      }
+      // Get redirect path from location state or default to home
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (err) {
       // Prefer the message returned by the backend (e.g. "Invalid credentials")
       const serverMessage = err?.response?.data?.message;

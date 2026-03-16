@@ -1,5 +1,4 @@
 import api from './api';
-import authStorage from '../utils/authStorage';
 
 // Constants for API calls
 const API_TIMEOUT = 15000; // 15 seconds
@@ -187,7 +186,7 @@ export const propertyService = {
   // Get user's properties
   getUserProperties: async () => {
     // Check if user is authenticated
-    const accessToken = authStorage.getAccessToken();
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
     if (!accessToken) {
       return { success: true, data: [] };
     }
@@ -252,7 +251,7 @@ export const propertyService = {
   // Get user's favorite properties
   getUserFavorites: async () => {
     // Check if user is authenticated
-    const accessToken = authStorage.getAccessToken();
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
     if (!accessToken) {
       return { success: true, data: [] };
     }
@@ -375,7 +374,7 @@ export const propertyService = {
         }
 
         // NEW: include authorization header explicitly, to avoid interceptor skipping due to public endpoint pattern
-        const accessToken = authStorage.getAccessToken();
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
         const headers = {
           'Content-Type': 'multipart/form-data'
         };

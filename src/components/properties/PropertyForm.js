@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TermsAndConditions from '../legal/TermsAndConditions';
 import PrivacyPolicy from '../legal/PrivacyPolicy';
-import { PROPERTY_TYPES } from '../../utils/propertyTypes';
-import { PROPERTY_TYPE_FIELDS, COMMON_FEATURES,lebanonVillages,lebanonCities } from '../../utils/propertyTypeFields';
+import { PROPERTY_TYPE_FIELDS, COMMON_FEATURES,lebanonVillages,lebanonCities, PROPERTY_TYPES } from '../../utils/propertyTypeFields';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { handleError } from '../../utils/errorHandler';
 import { propertyService } from '../../services/propertyService';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';

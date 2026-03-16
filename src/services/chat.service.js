@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import api from './api';
-import authStorage from '../utils/authStorage';
+
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 1000;
@@ -21,15 +21,17 @@ const handleError = (error, retryCount = 0) => {
 
 const messageCache = new Map();
 const conversationCache = new Map();
+let fetchConversationsPromise = null;
 
 export const chatService = {
   async checkAuth() {
-    const accessToken = authStorage.getToken('access_token');
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
     if (!accessToken) {
       throw new Error('No access token available');
     }
 
-    const userData = authStorage.getUserData();
+    const rawUser = typeof window !== 'undefined' ? sessionStorage.getItem('user') : null;
+    const userData = rawUser ? JSON.parse(rawUser) : null;
     if (!userData) {
       throw new Error('Invalid user data');
     }
@@ -37,50 +39,66 @@ export const chatService = {
     return { user: userData, provider: 'backend' };
   },
 
-  async fetchConversations(retryCount = 0) {
-    try {
-      const { user } = await this.checkAuth();
-      if (!user) return [];
+  async fetchConversations(options = {}) {
+    // Accept either a options object or a simple retry count for backwards compatibility
+    const { forceRefresh = false, retryCount = 0 } = typeof options === 'object' ? options : { forceRefresh: false, retryCount: options || 0 };
 
-      // Check cache first
-      const cachedData = conversationCache.get('conversations');
-      if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
-        console.log('Returning cached conversations');
-        return cachedData.conversations;
-      }
+    const attemptFetch = async (attemptRetryCount) => {
+      try {
+        const { user } = await this.checkAuth();
+        if (!user) return [];
 
-      console.log('Fetching fresh conversations');
-      
-      // Use backend API
-      const response = await api.get('/chat/conversations');
-      const conversations = response.data?.data || [];
-
-      // Process conversations to ensure last_message is set correctly
-      const processedConversations = conversations.map(conv => {
-        if (Array.isArray(conv.messages) && conv.messages.length > 0) {
-          return {
-            ...conv,
-            last_message: conv.messages[conv.messages.length - 1]
-          };
+        // Return cached data if still fresh and we are not forcing a refresh
+        const cachedData = conversationCache.get('conversations');
+        if (!forceRefresh && cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
+          console.log('Returning cached conversations');
+          return cachedData.conversations;
         }
-        return conv;
-      });
 
-      // Cache the conversations
-      conversationCache.set('conversations', {
-        conversations: processedConversations,
-        timestamp: Date.now()
-      });
+        console.log('Fetching fresh conversations');
 
-      return processedConversations;
-    } catch (error) {
-      const { shouldRetry, retryCount: newRetryCount } = handleError(error, retryCount);
-      if (shouldRetry && newRetryCount <= MAX_RETRIES) {
-        await sleep(RETRY_DELAY * newRetryCount);
-        return this.fetchConversations(newRetryCount);
+        // Use backend API
+        const response = await api.get('/chat/conversations');
+        const conversations = response.data?.data || [];
+
+        // Process conversations to ensure last_message is set correctly
+        const processedConversations = conversations.map(conv => {
+          if (Array.isArray(conv.messages) && conv.messages.length > 0) {
+            return {
+              ...conv,
+              last_message: conv.messages[conv.messages.length - 1]
+            };
+          }
+          return conv;
+        });
+
+        // Cache the conversations
+        conversationCache.set('conversations', {
+          conversations: processedConversations,
+          timestamp: Date.now()
+        });
+
+        return processedConversations;
+      } catch (error) {
+        const { shouldRetry, retryCount: newRetryCount } = handleError(error, attemptRetryCount);
+        if (shouldRetry && newRetryCount <= MAX_RETRIES) {
+          await sleep(RETRY_DELAY * newRetryCount);
+          return attemptFetch(newRetryCount);
+        }
+        throw error;
       }
-      throw error;
+    };
+
+    if (fetchConversationsPromise) {
+      console.log('Reusing in-flight conversations fetch');
+      return fetchConversationsPromise;
     }
+
+    fetchConversationsPromise = attemptFetch(retryCount).finally(() => {
+      fetchConversationsPromise = null;
+    });
+
+    return fetchConversationsPromise;
   },
 
   async fetchMessages(conversationId, retryCount = 0) {

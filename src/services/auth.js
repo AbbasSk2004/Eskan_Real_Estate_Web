@@ -1,13 +1,18 @@
-import { API_BASE_URL, AUTH_ENDPOINTS, STORAGE_KEYS } from '../config/constants';
 import api from './api';
-import authStorage from '../utils/authStorage';
-import { handleAuthError } from '../utils/authErrorHandler';
+
+
+const getApiBaseUrl = () => process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
 
 class AuthService {
   constructor() {
     this.refreshTokenTimeout = null;
     this.isRefreshing = false;
     this.refreshSubscribers = [];
+
+    // Bind event handlers to ensure `this` refers to the class instance
+    this.handleUserLeaving = this.handleUserLeaving.bind(this);
+    this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
     
     // Add event listeners for tab/browser close to update status
     if (typeof window !== 'undefined') {
@@ -22,14 +27,14 @@ class AuthService {
    * Update the user's online status on the backend.
    * This helper is reused by the different lifecycle handlers.
    */
-  updateStatus = async (status = 'active') => {
+  async updateStatus(status = 'active') {
     try {
-      const token = authStorage.getToken('access_token');
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
       if (!token) return;
 
       // Use sendBeacon for inactive status (often called during unload)
+      const endpoint = `${getApiBaseUrl()}/auth/update-status`;
       if (status === 'inactive' && navigator.sendBeacon) {
-        const endpoint = `${API_BASE_URL}/auth/update-status`;
         const payload = { status, token }; // backend can read the token from the body
         const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
         navigator.sendBeacon(endpoint, blob);
@@ -37,7 +42,7 @@ class AuthService {
       }
 
       // Fallback to fetch for active status or if sendBeacon is not available
-      await fetch(`${API_BASE_URL}/auth/update-status`, {
+      await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,18 +55,18 @@ class AuthService {
       // Silent failure – don't block UX because of status update issues
       console.error('Error updating user status:', err);
     }
-  };
+  }
 
   // Handle tab/browser close
-  handleUserLeaving = async () => {
+  async handleUserLeaving() {
     if (this.isAuthenticated()) {
       // Use sendBeacon-friendly approach inside updateStatus
       this.updateStatus('inactive');
     }
-  };
+  }
 
   // Handle tab visibility change (user switching tabs)
-  handleVisibilityChange = () => {
+  handleVisibilityChange() {
     if (!this.isAuthenticated()) return;
 
     if (document.visibilityState === 'hidden') {
@@ -71,14 +76,14 @@ class AuthService {
       // User switched back to the tab
       this.updateStatus('active');
     }
-  };
+  }
 
   // Additional handler for window focus (covers some browsers)
-  handleWindowFocus = () => {
+  handleWindowFocus() {
     if (this.isAuthenticated()) {
       this.updateStatus('active');
     }
-  };
+  }
 
   onRefreshed(token) {
     this.refreshSubscribers.forEach(callback => callback(token));
@@ -90,8 +95,9 @@ class AuthService {
   }
 
   async initializeTokenRefresh() {
-    if (!authStorage.hasValidToken()) {
-      const refreshToken = authStorage.getToken('refresh_token');
+    const hasToken = typeof window !== 'undefined' ? !!sessionStorage.getItem('access_token') : false;
+    if (!hasToken) {
+      const refreshToken = typeof window !== 'undefined' ? sessionStorage.getItem('refresh_token') : null;
       if (refreshToken) {
         try {
           await this.refreshToken();
@@ -105,8 +111,8 @@ class AuthService {
 
     const response = await this.verifyToken();
     if (response?.success) {
-      if (response.user) {
-        authStorage.setUserData(response.user);
+      if (response.user && typeof window !== 'undefined') {
+        sessionStorage.setItem('user', JSON.stringify(response.user));
       }
       return true;
     }
@@ -114,7 +120,8 @@ class AuthService {
   }
 
   isAuthenticated() {
-    return authStorage.hasValidToken() && !!this.getCurrentUser();
+    const hasToken = typeof window !== 'undefined' ? !!sessionStorage.getItem('access_token') : false;
+    return hasToken && !!this.getCurrentUser();
   }
 
   startRefreshTokenTimer(expiresIn) {
@@ -130,17 +137,23 @@ class AuthService {
   }
 
   async refreshToken() {
-    const refreshToken = authStorage.getToken('refresh_token');
+    const refreshToken = typeof window !== 'undefined' ? sessionStorage.getItem('refresh_token') : null;
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
 
-    const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
+    const userData = typeof window !== 'undefined' ? sessionStorage.getItem('user') : null;
+    const user = userData ? JSON.parse(userData) : null;
+    const userId = user?.id || user?._id;
+
+    const response = await api.post('/auth/refresh', { refresh_token: refreshToken, userId });
     if (response.data?.success) {
       const { access_token, refresh_token } = response.data;
-      authStorage.setToken('access_token', access_token);
-      if (refresh_token) {
-        authStorage.setToken('refresh_token', refresh_token);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('access_token', access_token);
+        if (refresh_token) {
+          sessionStorage.setItem('refresh_token', refresh_token);
+        }
       }
       return response.data;
     }
@@ -151,9 +164,14 @@ class AuthService {
     const response = await api.post('/auth/login', { email, password });
     if (response.data?.success) {
       const { user, session } = response.data;
-      authStorage.setAuthProvider('backend');
-      authStorage.setTokens(session.access_token, session.refresh_token, remember);
-      authStorage.setUserData(user);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('provider', 'backend');
+        sessionStorage.setItem('access_token', session.access_token);
+        if (session.refresh_token) {
+          sessionStorage.setItem('refresh_token', session.refresh_token);
+        }
+        sessionStorage.setItem('user', JSON.stringify(user));
+      }
 
       // Mark user as active right after storing the session so that the
       // status is updated even before React context effects run.
@@ -172,20 +190,22 @@ class AuthService {
     const response = await api.post('/auth/register', userData);
     if (response.data?.success) {
       const { user, session } = response.data;
-      // Always set the auth provider so we know the origin of authentication
-      authStorage.setAuthProvider('backend');
+      if (typeof window !== 'undefined') {
+        // Always set the auth provider so we know the origin of authentication
+        sessionStorage.setItem('provider', 'backend');
 
-      // Only attempt to save tokens if a session object with tokens is provided
-      if (session && session.access_token) {
-        authStorage.setToken('access_token', session.access_token);
-        if (session.refresh_token) {
-          authStorage.setToken('refresh_token', session.refresh_token);
+        // Only attempt to save tokens if a session object with tokens is provided
+        if (session && session.access_token) {
+          sessionStorage.setItem('access_token', session.access_token);
+          if (session.refresh_token) {
+            sessionStorage.setItem('refresh_token', session.refresh_token);
+          }
         }
-      }
 
-      // Store the user data (this is useful even before verification)
-      if (user) {
-        authStorage.setUserData(user);
+        // Store the user data (this is useful even before verification)
+        if (user) {
+          sessionStorage.setItem('user', JSON.stringify(user));
+        }
       }
 
       // Return success payload – token may be undefined when email verification is required
@@ -197,7 +217,7 @@ class AuthService {
   async logout() {
     try {
       // Only attempt to call the logout endpoint if we have a valid token
-      const token = authStorage.getAccessToken();
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
       if (token) {
         try {
           await api.post('/auth/logout');
@@ -208,7 +228,12 @@ class AuthService {
       }
     } finally {
       // Always clear local storage regardless of API call success
-      authStorage.clearAll();
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('provider');
+      }
     }
   }
 
@@ -231,13 +256,13 @@ class AuthService {
     const response = await api.post('/auth/verify-otp', { email, token });
     if (response.data?.success) {
       // If verification is successful and we get back user and session data, store it
-      if (response.data.user && response.data.session) {
-        authStorage.setAuthProvider('backend');
-        authStorage.setToken('access_token', response.data.session.access_token);
+      if (response.data.user && response.data.session && typeof window !== 'undefined') {
+        sessionStorage.setItem('provider', 'backend');
+        sessionStorage.setItem('access_token', response.data.session.access_token);
         if (response.data.session.refresh_token) {
-          authStorage.setToken('refresh_token', response.data.session.refresh_token);
+          sessionStorage.setItem('refresh_token', response.data.session.refresh_token);
         }
-        authStorage.setUserData(response.data.user);
+        sessionStorage.setItem('user', JSON.stringify(response.data.user));
       }
       return response.data;
     }
@@ -250,29 +275,20 @@ class AuthService {
   }
 
   async verifyToken() {
-    const token = authStorage.getToken('access_token');
+    let token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
     if (!token) {
       throw new Error('No token available');
     }
 
-    if (!authStorage.hasValidToken()) {
-      const refreshToken = authStorage.getToken('refresh_token');
-      if (refreshToken) {
-        await this.refreshToken();
-      } else {
-        throw new Error('Token expired and no refresh token available');
-      }
-    }
-
     const response = await api.get('/auth/verify', {
       headers: {
-        Authorization: `Bearer ${authStorage.getToken('access_token')}`
+        Authorization: `Bearer ${token}`
       }
     });
 
     if (response.data?.success) {
-      if (response.data.user) {
-        authStorage.setUserData(response.data.user);
+      if (response.data.user && typeof window !== 'undefined') {
+        sessionStorage.setItem('user', JSON.stringify(response.data.user));
       }
       return response.data;
     }
@@ -281,7 +297,9 @@ class AuthService {
   }
 
   getCurrentUser() {
-    return authStorage.getUserData();
+    if (typeof window === 'undefined') return null;
+    const userData = sessionStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
   }
 }
 

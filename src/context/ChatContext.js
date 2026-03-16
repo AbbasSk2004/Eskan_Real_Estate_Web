@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useChat } from '../hooks/useChat';
 import { useAuth } from './AuthContext';
@@ -18,27 +18,31 @@ export const ChatProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [activeConversationId, setActiveConversationId] = useState(null);
+  const hasStartedInitialLoad = useRef(false);
+
+  const { fetchConversations, conversations, setActiveConversation } = chatState;
 
   // Load initial conversations only once when authenticated
   useEffect(() => {
-    if (isAuthenticated && !initialLoadComplete) {
-      chatState.fetchConversations().then(() => {
+    if (isAuthenticated && !initialLoadComplete && !hasStartedInitialLoad.current) {
+      hasStartedInitialLoad.current = true;
+      fetchConversations().then(() => {
         setInitialLoadComplete(true);
       });
     }
-  }, [isAuthenticated, chatState]);
+  }, [isAuthenticated, initialLoadComplete, fetchConversations]);
 
   // Handle active conversation change
   const handleSetActiveConversationId = useCallback((conversationId) => {
     if (conversationId !== activeConversationId) {
       setActiveConversationId(conversationId);
       // Find and set the active conversation object
-      const conversation = chatState.conversations.find(conv => conv.id === conversationId);
+      const conversation = conversations.find(conv => conv.id === conversationId);
       if (conversation) {
-        chatState.setActiveConversation(conversation);
+        setActiveConversation(conversation);
       }
     }
-  }, [activeConversationId, chatState]);
+  }, [activeConversationId, conversations, setActiveConversation]);
 
   const value = {
     ...chatState,

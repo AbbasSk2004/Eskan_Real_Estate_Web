@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PROPERTY_TYPES } from '../../utils/propertyTypes';
+import { PROPERTY_TYPES } from '../../utils/propertyTypeFields';
 import { PROPERTY_TYPE_FIELDS, COMMON_FEATURES, lebanonCities, lebanonVillages } from '../../utils/propertyTypeFields';
 import { PROPERTY_STATUS, BEDROOM_OPTIONS, BATHROOM_OPTIONS } from '../../utils/constants';
 import '../../assets/css/PropertyFilters.css';

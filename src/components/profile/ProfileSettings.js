@@ -3,9 +3,11 @@ import { endpoints } from '../../services/api';
 import { useToast } from '../../hooks/useToast';
 import { getProfileImageUrl } from '../../utils/imageUtils';
 import { useProfilePolling } from '../../hooks/useProfilePolling';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileSettings = () => {
   const toast = useToast();
+  const { updateUserState } = useAuth();
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -18,7 +20,7 @@ const ProfileSettings = () => {
   const [previewUrl, setPreviewUrl] = useState('');
 
   // Use profile polling to get latest data
-  const { profileData, loading: profileLoading } = useProfilePolling();
+  const { profileData, loading: profileLoading, refreshProfile } = useProfilePolling();
 
   // Update form data when profile data changes
   useEffect(() => {
@@ -102,7 +104,14 @@ const ProfileSettings = () => {
       const response = await endpoints.profile.update(submitData);
       
       if (response?.data?.success) {
+        const updatedProfile = response.data.data;
         toast.success('Profile updated successfully!');
+        if (updateUserState) {
+          updateUserState(updatedProfile);
+        }
+        if (refreshProfile) {
+          refreshProfile();
+        }
       } else {
         throw new Error(response?.data?.message || 'Failed to update profile');
       }

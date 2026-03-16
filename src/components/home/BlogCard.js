@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../assets/css/BlogCard.css';
 import { formatDate } from '../../utils/formatters';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const BlogCard = ({ blog }) => {
   const {
@@ -9,6 +10,8 @@ const BlogCard = ({ blog }) => {
     title,
     excerpt,
     image_url,
+    image,
+    coverImage,
     category,
     created_at
   } = blog;
@@ -18,7 +21,7 @@ const BlogCard = ({ blog }) => {
       <div className="position-relative overflow-hidden">
         <img 
           className="img-fluid w-100 blog-image" 
-          src={image_url || '/img/default-blog.jpg'} 
+          src={getImageUrl(image_url || image || coverImage)} 
           alt={title}
           onError={(e) => {
             e.target.src = '/img/default-blog.jpg';

@@ -1,15 +1,12 @@
 {
   "name": "real-estate-react",
   "version": "1.0.0",
-  "description": "A full-stack, modern real estate web application built with React for the frontend and Express.js with Supabase for the backend",
+  "description": "A full-stack real estate web application built with React for the frontend and an Express + MongoDB backend",
   "private": true,
   "homepage": ".",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@react-google-maps/api": "^2.20.6",
-    "@supabase/gotrue-js": "^2.70.0",
-    "@supabase/realtime-js": "^2.11.10",
-    "@supabase/supabase-js": "^2.50.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -48,9 +45,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently \"npm start\" \"npm run server\"",
-    "server": "cd backend && npm run dev",
-    "install-all": "npm install && cd backend && npm install",
-    "build-all": "npm run build && cd backend && npm install --production",
+    "server": "npm --prefix ../backend run dev",
+    "install-all": "npm install && npm --prefix ../backend install",
+    "build-all": "npm run build && npm --prefix ../backend install --production",
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix",
     "format": "prettier --write src/**/*.{js,jsx,json,css,md}",
@@ -58,10 +55,7 @@
     "clean": "rm -rf build node_modules backend/node_modules",
     "docker:build": "docker build -t real-estate-app .",
     "docker:run": "docker run -p 80:80 real-estate-app",
-    "deploy": "npm run build && npm run docker:build",
-    "verify-env": "node scripts/verify-env.js",
-    "prestart": "npm run verify-env",
-    "prebuild": "npm run verify-env"
+    "deploy": "npm run build && npm run docker:build"
   },
   "eslintConfig": {
     "extends": [
@@ -97,7 +91,6 @@
   "keywords": [
     "real-estate",
     "react",
-    "supabase",
     "express",
     "property-management",
     "property-listing",

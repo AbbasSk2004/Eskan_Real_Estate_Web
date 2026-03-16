@@ -122,7 +122,6 @@ export const PAGINATION_LIMITS = {
 };
 
 export const API_ENDPOINTS = {
-  base: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
   storage: process.env.REACT_APP_STORAGE_URL || 'http://localhost:3001/storage'
 };
 

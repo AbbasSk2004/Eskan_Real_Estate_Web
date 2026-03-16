@@ -1,8 +1,33 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config/constants';
-import authStorage from '../utils/authStorage';
-import { handleAuthError, handleTokenError, AUTH_ERROR_TYPES } from '../utils/authErrorHandler';
 import similarPropertiesService from './similar_properties';
+
+const getSessionItem = (key) => {
+  if (typeof window === 'undefined' || !window?.sessionStorage) return null;
+  return window.sessionStorage.getItem(key);
+};
+
+const setSessionItem = (key, value) => {
+  if (typeof window === 'undefined' || !window?.sessionStorage || value == null) return;
+  window.sessionStorage.setItem(key, value);
+};
+
+const removeSessionItem = (key) => {
+  if (typeof window === 'undefined' || !window?.sessionStorage) return;
+  window.sessionStorage.removeItem(key);
+};
+
+const getAccessToken = () => getSessionItem('access_token');
+const getRefreshToken = () => getSessionItem('refresh_token');
+const setTokens = (accessToken, refreshToken) => {
+  if (accessToken) setSessionItem('access_token', accessToken);
+  if (refreshToken) setSessionItem('refresh_token', refreshToken);
+};
+
+const clearAuthSession = () => {
+  removeSessionItem('access_token');
+  removeSessionItem('refresh_token');
+  removeSessionItem('user');
+};
 
 // Cache configuration
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -38,18 +63,23 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+// Default API URL (env var or local dev fallback)
+const DEFAULT_API_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  'http://localhost:3001/api';
+
 // Create axios instance
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'https://eskan-real-estate-backend.onrender.com/api',
+  baseURL: DEFAULT_API_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Special configuration for map-related requests
+// Special configuration for map-related requests (uses same backend URL)
 const mapApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://eskan-real-estate-backend.onrender.com/api',
+  baseURL: DEFAULT_API_URL,
   timeout: 30000, // 30 seconds timeout for map operations
   headers: {
     'Content-Type': 'application/json'
@@ -266,7 +296,7 @@ api.interceptors.request.use(
 
     // If it's a user-specific endpoint, always require authentication
     if (isUserSpecificEndpoint) {
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = getAccessToken();
       if (!accessToken) {
         throw new Error('Authentication required');
       }
@@ -280,7 +310,7 @@ api.interceptors.request.use(
     }
 
     // Get the access token
-    let accessToken = authStorage.getAccessToken();
+    let accessToken = getAccessToken();
 
     // If no access token and not a public endpoint, throw authentication error
     if (!accessToken) {
@@ -328,7 +358,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (err) {
           // Clear auth state on refresh failure
-          authStorage.clearAll();
+          clearAuthSession();
           // Notify about auth state change
           window.dispatchEvent(new CustomEvent('auth-state-change', {
             detail: { isAuthenticated: false }
@@ -340,7 +370,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = authStorage.getRefreshToken();
+        const refreshToken = getRefreshToken();
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
@@ -348,7 +378,7 @@ api.interceptors.response.use(
         const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
         if (response.data?.success) {
           const { access_token, refresh_token } = response.data;
-          authStorage.setTokens(access_token, refresh_token);
+          setTokens(access_token, refresh_token);
 
           // Update the failed requests with new token
           processQueue(null, access_token);
@@ -361,7 +391,7 @@ api.interceptors.response.use(
       } catch (error) {
         processQueue(error, null);
         // Clear auth state
-        authStorage.clearAll();
+        clearAuthSession();
         // Notify about auth state change
         window.dispatchEvent(new CustomEvent('auth-state-change', {
           detail: { isAuthenticated: false }
@@ -422,7 +452,11 @@ const auth = {
 // Profile endpoints
 const profile = {
   get: () => api.get('/profile', {
-    validateStatus: (status) => status === 200
+    validateStatus: (status) => status === 200,
+    headers: {
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache'
+    }
   }),
   update: (formData) => {
     // Ensure proper handling of FormData
@@ -477,7 +511,7 @@ const properties = {
   getUserProperties: async () => {
     try {
       // Check if user is authenticated
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = getAccessToken();
       if (!accessToken) {
         return { success: true, data: [] };
       }
@@ -535,7 +569,7 @@ const properties = {
   getFavorites: async () => {
     try {
       // Check if user is authenticated
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = getAccessToken();
       if (!accessToken) {
         return { success: true, data: [] };
       }
@@ -608,6 +642,11 @@ const properties = {
 // Property views endpoints
 const propertyViews = {
   recordView: async (propertyId) => {
+    // Defensive guard: avoid calling backend with undefined or invalid IDs
+    if (!propertyId) {
+      return { success: true, data: { count: 0 } };
+    }
+
     try {
       const response = await api.post(`/property-views/${propertyId}`, {}, {
         // Don't require authentication for view recording
@@ -628,6 +667,11 @@ const propertyViews = {
   },
 
   getViewCount: async (propertyId) => {
+    // Defensive guard: avoid calling backend with undefined IDs
+    if (!propertyId) {
+      return 0;
+    }
+
     try {
       const response = await api.get(`/property-views/${propertyId}/count`, {
         validateStatus: (status) => status === 200 || status === 404 || status === 401
@@ -648,7 +692,7 @@ const propertyViews = {
   getUserTotalViews: async () => {
     try {
       // Check if user is authenticated
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = getAccessToken();
       if (!accessToken) {
         return {
           success: true,
@@ -716,7 +760,7 @@ const testimonials = {
   },
   create: async (data) => {
     try {
-      const token = authStorage.getAccessToken();
+      const token = getAccessToken();
       if (!token) {
         throw new Error('Please log in to submit your testimonial.');
       }
@@ -760,7 +804,7 @@ const testimonials = {
   },
   checkUserTestimonial: async () => {
     try {
-      const token = authStorage.getAccessToken();
+      const token = getAccessToken();
       if (!token) {
         return { success: true, exists: false };
       }
@@ -837,13 +881,14 @@ const agents = {
     
     return response;
   },
-  getById: (id) => axios.get(`${API_BASE_URL}/agents/${id}`),
+  getById: (id) => api.get(`/agents/${id}`),
   apply: async (formData) => {
     try {
+      const token = getAccessToken();
       const response = await api.post('/agents/applications', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${authStorage.getToken('access_token')}`
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         timeout: 30000,
         validateStatus: (status) => status >= 200 && status < 300
@@ -857,10 +902,9 @@ const agents = {
   },
   getApplicationDetails: async () => {
     try {
+      const token = getAccessToken();
       const response = await api.get('/agents/applications/details', {
-        headers: {
-          'Authorization': `Bearer ${authStorage.getToken('access_token')}`
-        }
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       return response.data;

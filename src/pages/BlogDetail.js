@@ -4,6 +4,7 @@ import { endpoints } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatDate } from '../utils/formatters';
+import { getImageUrl } from '../utils/imageUtils';
 import '../assets/css/BlogDetail.css';
 
 const BlogDetail = () => {
@@ -57,7 +58,7 @@ const BlogDetail = () => {
     );
   }
 
-  const { title, image_url, category, created_at, content } = blog;
+  const { title, image_url, image, coverImage, category, created_at, content } = blog;
 
   return (
     <section className="blog-detail py-5">
@@ -80,10 +81,10 @@ const BlogDetail = () => {
               </p>
             </div>
 
-            {image_url && (
+            {(image_url || image || coverImage) && (
               <div className="blog-image-wrapper mb-4">
                 <img
-                  src={image_url}
+                  src={getImageUrl(image_url || image || coverImage)}
                   alt={title}
                   className="img-fluid rounded w-100"
                   onError={(e) => {

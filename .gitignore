@@ -149,9 +149,6 @@ Thumbs.db
 firebase-debug.log
 firestore-debug.log
 
-# Supabase
-.supabase/
-
 # Backend specific
 
 backend/node_modules/

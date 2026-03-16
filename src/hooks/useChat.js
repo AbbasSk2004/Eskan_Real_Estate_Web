@@ -19,8 +19,10 @@ export const useChat = () => {
   const pollingInterval = useRef(null);
   const fetchInProgress = useRef(false);
   const lastFetchTime = useRef(0);
+
   const MIN_FETCH_INTERVAL = 5000; // Minimum 5 seconds between fetches
   const activeConversationRef = useRef(activeConversation);
+  const initialFetchDone = useRef(false);
 
   useEffect(() => {
     activeConversationRef.current = activeConversation;
@@ -29,8 +31,8 @@ export const useChat = () => {
   // Clear any errors
   const clearError = () => setError(null);
 
-  // Handle API errors
-  const handleApiError = async (error) => {
+  // Handle API errors (stable reference)
+  const handleApiError = useCallback(async (error) => {
     console.error('API Error:', error);
     if (error.message?.includes('token expired')) {
       try {
@@ -44,12 +46,13 @@ export const useChat = () => {
     }
     setError(error.message);
     return false;
-  };
+  }, [refreshToken]);
+
 
   // Mark messages as read
   const markMessagesAsRead = useCallback(async (conversationId) => {
     if (!isAuthenticated || !user) return;
-    
+
     try {
       await chatService.markMessagesAsRead(conversationId);
       // Update the messages in state to mark them as read
@@ -63,7 +66,7 @@ export const useChat = () => {
         return markMessagesAsRead(conversationId);
       }
     }
-  }, [user, isAuthenticated, refreshToken]);
+  }, [user, isAuthenticated, handleApiError]);
 
   // Fetch messages for a conversation
   const fetchMessages = useCallback(async (conversationId) => {
@@ -75,10 +78,10 @@ export const useChat = () => {
       fetchInProgress.current = true;
       setLoadingMessages(true);
       clearError();
-      
+
       console.log('Fetching messages for conversation:', conversationId);
       const data = await chatService.fetchMessages(conversationId);
-      
+
       if (Array.isArray(data)) {
         setMessages(data);
         console.log(`Loaded ${data.length} messages for conversation:`, conversationId);
@@ -96,7 +99,7 @@ export const useChat = () => {
       fetchInProgress.current = false;
       setLoadingMessages(false);
     }
-  }, [user, isAuthenticated, refreshToken]);
+  }, [user, isAuthenticated, handleApiError]);
 
   // Handle active conversation change
   const handleSetActiveConversation = useCallback((conversation) => {
@@ -113,7 +116,7 @@ export const useChat = () => {
   }, [activeConversation, fetchMessages, markMessagesAsRead]);
 
   // Helper: get timestamp of a conversation's latest message
-  const getLastMessageDate = (conv) => {
+  const getLastMessageDate = useCallback((conv) => {
     if (Array.isArray(conv?.messages) && conv.messages.length > 0) {
       return new Date(conv.messages[conv.messages.length - 1].created_at);
     }
@@ -122,15 +125,22 @@ export const useChat = () => {
     }
     // Fallback to updated_at / created_at if available
     return conv.updated_at ? new Date(conv.updated_at) : new Date(0);
-  };
+  }, []);
 
   // Helper: sort conversations by most-recent message (descending)
-  const sortConversations = (list) =>
-    [...list].sort((a, b) => getLastMessageDate(b) - getLastMessageDate(a));
+  const sortConversations = useCallback((list) =>
+    [...list].sort((a, b) => getLastMessageDate(b) - getLastMessageDate(a)),
+  [getLastMessageDate]);
 
   // Fetch conversations
-  const fetchConversations = useCallback(async () => {
+  const fetchConversations = useCallback(async (options = {}) => {
     if (!isAuthenticated || !user || fetchInProgress.current) {
+      return;
+    }
+
+    const now = Date.now();
+    const forceRefresh = options?.forceRefresh === true;
+    if (!forceRefresh && (now - lastFetchTime.current) < MIN_FETCH_INTERVAL) {
       return;
     }
 
@@ -138,10 +148,8 @@ export const useChat = () => {
       fetchInProgress.current = true;
       setLoadingConversations(true);
       clearError();
-      
-      // Ensure we get fresh data every time by clearing the cached list first
-      chatService.clearConversationCache();
-      const data = await chatService.fetchConversations();
+
+      const data = await chatService.fetchConversations({ forceRefresh });
       if (Array.isArray(data)) {
         // Process each conversation to ensure last_message is set correctly
         const processedData = data.map(conv => {
@@ -154,7 +162,7 @@ export const useChat = () => {
           }
           return conv;
         });
-        
+
         // Keep list ordered by latest activity
         setConversations(sortConversations(processedData));
         // Update active conversation if it is still the current view
@@ -165,24 +173,29 @@ export const useChat = () => {
           }
         }
       }
+
+      lastFetchTime.current = Date.now();
     } catch (err) {
       console.error('Error fetching conversations:', err);
       const shouldRetry = await handleApiError(err);
       if (shouldRetry) {
-        return fetchConversations();
+        return fetchConversations(options);
       }
     } finally {
       fetchInProgress.current = false;
       setLoadingConversations(false);
     }
-  }, [user, isAuthenticated, refreshToken]);
+  }, [user, isAuthenticated, handleApiError, sortConversations]);
 
   // Start polling when component mounts (ensure only one interval)
   useEffect(() => {
     // Start polling only once when the user is authenticated
     if (isAuthenticated) {
-      // Initial load
-      fetchConversations();
+      // Initial load strictly once per mount sequence
+      if (!initialFetchDone.current) {
+        initialFetchDone.current = true;
+        fetchConversations();
+      }
 
       if (!pollingInterval.current) {
         pollingInterval.current = setInterval(() => {
@@ -207,12 +220,12 @@ export const useChat = () => {
         pollingInterval.current = null;
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchConversations, fetchMessages]);
 
   // Delete chat history
   const deleteChatHistory = useCallback(async (conversationId) => {
     if (!isAuthenticated || !user) return;
-    
+
     try {
       await chatService.deleteChatHistory(conversationId);
       // Remove the conversation from the list
@@ -228,7 +241,7 @@ export const useChat = () => {
         return deleteChatHistory(conversationId);
       }
     }
-  }, [user, isAuthenticated, activeConversation, handleSetActiveConversation, refreshToken]);
+  }, [user, isAuthenticated, activeConversation, handleSetActiveConversation, handleApiError]);
 
   // Handle search
   const handleSearch = useCallback(async (e) => {
@@ -249,7 +262,7 @@ export const useChat = () => {
         return handleSearch(e);
       }
     }
-  }, [refreshToken]);
+  }, [handleApiError]);
 
   // Start new conversation
   const startNewConversation = useCallback(async (otherUser, propertyId = null) => {
@@ -276,7 +289,7 @@ export const useChat = () => {
       }
       throw err;
     }
-  }, [handleSetActiveConversation]);
+  }, [handleSetActiveConversation, handleApiError]);
 
   // Send message with optimistic update
   const sendMessage = useCallback(async (content, conversationId) => {
@@ -284,7 +297,7 @@ export const useChat = () => {
       toast.error('Please sign in to send messages');
       return null;
     }
-    
+
     try {
       // Create optimistic message
       const optimisticMessage = {
@@ -311,38 +324,38 @@ export const useChat = () => {
         const updated = prev.map(conv =>
           conv.id === conversationId
             ? {
-                ...conv,
-                messages: Array.isArray(conv.messages)
-                  ? [...conv.messages, optimisticMessage]
-                  : [optimisticMessage],
-                last_message: optimisticMessage // Set last_message to the optimistic message
-              }
+              ...conv,
+              messages: Array.isArray(conv.messages)
+                ? [...conv.messages, optimisticMessage]
+                : [optimisticMessage],
+              last_message: optimisticMessage // Set last_message to the optimistic message
+            }
             : conv
         );
         return sortConversations(updated);
       });
 
       const newMessage = await chatService.sendMessage(content, conversationId);
-      
+
       if (newMessage) {
         // Replace optimistic message with real one
-        setMessages(prev => 
-          prev.map(msg => 
+        setMessages(prev =>
+          prev.map(msg =>
             msg.id === optimisticMessage.id ? newMessage : msg
           )
         );
-        
+
         // Update conversation with real message
         setConversations(prev => {
           const updated = prev.map(conv =>
             conv.id === conversationId
               ? {
-                  ...conv,
-                  messages: Array.isArray(conv.messages)
-                    ? conv.messages.map(msg => msg.id === optimisticMessage.id ? newMessage : msg)
-                    : [newMessage],
-                  last_message: newMessage // Update last_message with the real message
-                }
+                ...conv,
+                messages: Array.isArray(conv.messages)
+                  ? conv.messages.map(msg => msg.id === optimisticMessage.id ? newMessage : msg)
+                  : [newMessage],
+                last_message: newMessage // Update last_message with the real message
+              }
               : conv
           );
           return sortConversations(updated);
@@ -357,7 +370,7 @@ export const useChat = () => {
         return sendMessage(content, conversationId);
       }
     }
-  }, [user, isAuthenticated, fetchConversations, refreshToken]);
+  }, [user, isAuthenticated, handleApiError, sortConversations]);
 
   // Keep conversation list in sync with messages of the active conversation
   useEffect(() => {
@@ -371,7 +384,7 @@ export const useChat = () => {
       );
       return sortConversations(updated);
     });
-  }, [messages, activeConversation]);
+  }, [messages, activeConversation, sortConversations]);
 
   /* ------------------------------------------------------------------
    * WebSocket real-time listeners
@@ -414,7 +427,8 @@ export const useChat = () => {
 
         if (!found) {
           // Conversation not in local list – fetch the latest list in background
-          fetchConversations();
+          // Force refresh so we pick up the new conversation created on the server.
+          fetchConversations({ forceRefresh: true });
           return prev;
         }
         return sortConversations(updated);
@@ -435,8 +449,7 @@ export const useChat = () => {
       unsubscribeNewMsg?.();
       unsubscribeNewConv?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchConversations, markMessagesAsRead, sortConversations, user]);
 
   return {
     loadingConversations,

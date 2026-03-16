@@ -76,7 +76,7 @@ const Blogs = () => {
 
         <div className="row">
           {blogs.map((blog) => (
-            <div key={blog.id} className="col-md-4 mb-4">
+            <div key={blog.id || blog._id} className="col-md-4 mb-4">
               <BlogCard blog={blog} />
             </div>
           ))}

@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ApiProvider } from './context/ApiContext';
-import { DatabaseProvider } from './context/DatabaseContext';
-import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ChatProvider, useGlobalChat } from './context/ChatContext';
 import { GoogleMapsProvider } from './components/shared/GoogleMapsLoader';
 import toast from 'react-hot-toast';
-import { checkEnvironmentSetup } from './utils/setupHelpers';
 import ScrollToTop from './components/common/ScrollToTop';
 import BackToTop from './components/common/BackToTop';
 import CustomToastContainer from './components/common/ToastContainer';
@@ -16,10 +12,10 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PrivateRoute from './components/auth/PrivateRoute';
-import authStorage from './utils/authStorage';
+
 import websocketService from './services/websocket';
 import { HelmetProvider } from 'react-helmet-async';
-import { initAnalytics, sendPageview } from './utils/analytics';
+
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
@@ -59,12 +55,12 @@ import './App.css';
 const AppContent = () => {
   const [isInitializing, setIsInitializing] = useState(() => {
     // Don't show initializing state if we have a valid token
-    return !authStorage.hasValidToken();
+    return !(typeof window !== 'undefined' && sessionStorage.getItem('access_token'));
   });
   const [hasError, setHasError] = useState(false);
   const { user } = useAuth();
   const { showChat, setShowChat } = useGlobalChat();
-  const location = useLocation();
+ 
 
   // Ensure page scrolls to top on app initialization and refresh
   useEffect(() => {
@@ -99,23 +95,10 @@ const AppContent = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Initialize Google Analytics once
-        initAnalytics();
-        // Only check environment setup if we're not authenticated
-        if (!user && !authStorage.hasValidToken()) {
-          const isSetupValid = await checkEnvironmentSetup();
-          if (!isSetupValid) {
-            setHasError(true);
-            toast.error('Database connection failed. Please check your setup.');
-          }
-        }
+      // Simulate initialization tasks (e.g., checking DB connection, loading config)
       } catch (error) {
         console.error('Initialization error:', error);
-        // Don't show error if it's just an authentication error
-        if (!error.message?.includes('Authentication required')) {
-          setHasError(true);
-          toast.error('Failed to initialize the application.');
-        }
+        toast.error('Failed to initialize the application.');
       } finally {
         setIsInitializing(false);
       }
@@ -124,10 +107,6 @@ const AppContent = () => {
     initializeApp();
   }, [user]);
 
-  // Track page views on route change
-  useEffect(() => {
-    sendPageview(location.pathname + location.search);
-  }, [location]);
 
   // Don't show loading spinner if we have a valid user
   if (isInitializing && !user) {
@@ -211,19 +190,17 @@ function App() {
           }}
         >
           <AuthProvider>
-            <ThemeProvider>
-              <ApiProvider>
+           
+              
                 <NotificationProvider>
-                  <DatabaseProvider>
-                    <ChatProvider>
-                      <GoogleMapsProvider>
-                        <AppContent />
-                      </GoogleMapsProvider>
-                    </ChatProvider>
-                  </DatabaseProvider>
+                  <ChatProvider>
+                    <GoogleMapsProvider>
+                      <AppContent />
+                    </GoogleMapsProvider>
+                  </ChatProvider>
                 </NotificationProvider>
-              </ApiProvider>
-            </ThemeProvider>
+              
+          
           </AuthProvider>
         </Router>
       </HelmetProvider>

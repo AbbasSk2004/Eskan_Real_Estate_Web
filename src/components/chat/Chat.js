@@ -8,6 +8,7 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import { useAuth } from '../../context/AuthContext';
 import { useGlobalChat } from '../../context/ChatContext';
+import { getProfileImageUrl } from '../../utils/imageUtils';
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -203,7 +204,7 @@ const Chat = () => {
             {otherUser ? (
               <div className="d-flex align-items-center">
                 <img
-                  src={otherUser.profile_photo || '/default-avatar.png'}
+                  src={getProfileImageUrl(otherUser.profile_photo)}
                   alt={`${otherUser.firstname} ${otherUser.lastname}`}
                   className="rounded-circle me-2"
                   width="40"
@@ -275,7 +276,7 @@ const Chat = () => {
                       style={{ cursor: 'pointer' }}
                     >
                       <img
-                        src={user.profile_photo || '/default-avatar.png'}
+                        src={getProfileImageUrl(user.profile_photo)}
                         alt={`${user.firstname} ${user.lastname}`}
                         className="rounded-circle me-2"
                         width="40"

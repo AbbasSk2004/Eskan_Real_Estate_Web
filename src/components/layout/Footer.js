@@ -4,6 +4,9 @@ import { endpoints } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 
+// Module-level guard to prevent StrictMode duplicate initialization fetches
+const checkedUsers = new Set();
+
 const Footer = () => {
   const thanksRef = useRef(null);
   const { isAuthenticated, user } = useAuth();
@@ -16,6 +19,12 @@ const Footer = () => {
       setIsLoading(false);
       return;
     }
+
+    // Prevent duplicate initialization check in StrictMode or across remounts
+    if (checkedUsers.has(user.id)) {
+      return;
+    }
+    checkedUsers.add(user.id);
 
     setIsLoading(true);
     try {

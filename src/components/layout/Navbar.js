@@ -5,6 +5,7 @@ import NotificationBell from '../notifications/NotificationBell';
 import toast from 'react-hot-toast';
 import { useProfilePolling } from '../../hooks/useProfilePolling';
 import Sidebar from './Sidebar';
+import { getProfileImageUrl } from '../../utils/imageUtils';
 
 const Navbar = ({ onChatOpen }) => {
   const [isSticky, setIsSticky] = useState(false);
@@ -24,7 +25,7 @@ const Navbar = ({ onChatOpen }) => {
   const lastName = profileData?.lastname || user?.profile?.lastname || '';
   const fullName = `${firstName} ${lastName}`.trim();
   const email = profileData?.email || user?.email;
-  const profileImg = profileData?.profile_photo || user?.profile?.profile_photo;
+  const profileImg = getProfileImageUrl(profileData?.profile_photo || user?.profile?.profile_photo);
 
   // Close sidebar & profile dropdown on route change
   useEffect(() => {

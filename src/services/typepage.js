@@ -1,5 +1,4 @@
 import api from './api';
-import authStorage from '../utils/authStorage';
 
 // Constants for API calls
 const API_TIMEOUT = 15000; // 15 seconds

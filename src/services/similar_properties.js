@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../config/constants';
+import api from './api';
 
 // Cache configuration
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes for client-side cache
@@ -25,7 +24,7 @@ const getSimilarProperties = async (propertyId, limit = 4) => {
 
   try {
     // Make request to the backend "similar-properties" endpoint which uses basic filtering (no ML involved)
-    const response = await axios.get(`${API_BASE_URL}/similar-properties/${propertyId}`, {
+    const response = await api.get(`/similar-properties/${propertyId}`, {
       params: { limit },
       headers: {
         'Content-Type': 'application/json'

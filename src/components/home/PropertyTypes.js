@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PROPERTY_TYPES } from '../../utils/propertyTypes';
+import { PROPERTY_TYPES } from '../../utils/propertyTypeFields';
 
 const PropertyTypes = () => {
   const navigate = useNavigate();

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { endpoints } from '../../services/api';
 import { getProfileImageUrl } from '../../utils/imageUtils';
 import { useToast } from '../../hooks/useToast';
 import { useNavigate } from 'react-router-dom';
 import { useProfilePolling } from '../../hooks/useProfilePolling';
 
-const ProfileHeader = ({ onChangePassword }) => {
+const ProfileHeader = ({ onChangePassword, updateUserState }) => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     firstname: '',
@@ -17,7 +17,8 @@ const ProfileHeader = ({ onChangePassword }) => {
   const navigate = useNavigate();
   
   // Use the profile polling hook to get latest data
-  const { profileData, loading: profileLoading } = useProfilePolling();
+  const { profileData, loading: profileLoading, refreshProfile } = useProfilePolling();
+  const prevEditModeRef = useRef(false);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -34,8 +35,17 @@ const ProfileHeader = ({ onChangePassword }) => {
       const response = await endpoints.profile.update(formDataToSend);
       
       if (response?.data?.success) {
+        const updatedProfile = response.data.data;
         setEditMode(false);
         toast.success('Profile updated successfully!');
+
+        // Update profile state immediately (avoid stale cached values)
+        if (updateUserState) {
+          updateUserState(updatedProfile);
+        }
+        if (refreshProfile) {
+          refreshProfile();
+        }
       } else {
         throw new Error(response?.data?.message || 'Failed to update profile');
       }
@@ -46,15 +56,18 @@ const ProfileHeader = ({ onChangePassword }) => {
     }
   };
 
-  // If we're in edit mode and receive new profile data, update the form
-  if (editMode && profileData && !formData.firstname) {
-    setFormData({
-      firstname: profileData.firstname || '',
-      lastname: profileData.lastname || '',
-      phone: profileData.phone || '',
-      profilePhoto: null
-    });
-  }
+  // Initialize edit form when edit mode is opened (only once per open)
+  useEffect(() => {
+    if (editMode && !prevEditModeRef.current && profileData) {
+      setFormData({
+        firstname: profileData.firstname || '',
+        lastname: profileData.lastname || '',
+        phone: profileData.phone || '',
+        profilePhoto: null
+      });
+    }
+    prevEditModeRef.current = editMode;
+  }, [editMode, profileData]);
 
   if (!profileData) {
     return <div>Loading profile...</div>;
@@ -80,9 +93,7 @@ const ProfileHeader = ({ onChangePassword }) => {
               <div className="position-relative d-inline-block">
                 {profile_photo ? (
                   <img
-                    src={typeof profile_photo === 'object' && profile_photo.url 
-                      ? profile_photo.url 
-                      : (profile_photo.startsWith('http') ? profile_photo : getProfileImageUrl(profile_photo))}
+                    src={getProfileImageUrl(profile_photo)}
                     alt="Profile"
                     className="rounded-circle"
                     style={{ width: '120px', height: '120px', objectFit: 'cover' }}

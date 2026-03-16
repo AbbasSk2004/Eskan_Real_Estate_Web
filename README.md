@@ -2,10 +2,9 @@
 
 [![React](https://img.shields.io/badge/React-18.x-blue)](https://reactjs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-green)](https://expressjs.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Latest-purple)](https://supabase.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A full-stack, modern real estate web application built with React for the frontend and Express.js with Supabase for the backend. The platform allows users to browse, search, and filter property listings, manage their accounts, and contact agents directly. It features a responsive design, image galleries, testimonials, agent profiles, and an admin panel for property management.
+A full-stack, modern real estate web application built with React for the frontend and Express.js + MongoDB for the backend. The platform allows users to browse, search, and filter property listings, manage their accounts, and contact agents directly. It features a responsive design, image galleries, testimonials, agent profiles, and an admin panel for property management.
 
 ## 🚀 Features
 
@@ -24,9 +23,9 @@ A full-stack, modern real estate web application built with React for the fronte
 ## 🛠️ Technologies Used
 
 - **Frontend**: React.js, React Router, Bootstrap 5, Context API
-- **Backend**: Express.js, Supabase
-- **Authentication**: JWT, Supabase Auth
-- **Database**: PostgreSQL (via Supabase)
+- **Backend**: Express.js, MongoDB
+- **Authentication**: JWT
+- **Database**: MongoDB
 - **Maps**: Google Maps API
 - **Deployment**: Docker, Nginx
 - **Other**: Axios, React Toastify, Font Awesome
@@ -38,43 +37,31 @@ A full-stack, modern real estate web application built with React for the fronte
 - Node.js (v16 or later)
 - npm or yarn
 - Docker and Docker Compose (for containerized deployment)
-- Supabase account and project
+- MongoDB (local or cloud)
 
 ### Environment Variables
 
 Create a `.env` file in the root directory with the following variables:
 
 ```
-# API URL - Development
-REACT_APP_API_URL=http://localhost:5000/api
+# Backend configuration - Frontend should talk to the backend API only
+REACT_APP_API_BASE_URL=http://localhost:3001/api
+REACT_APP_WS_URL=ws://localhost:3001
 
-# API URL - Production
-# REACT_APP_API_URL=https://eskan-real-estate-backend.onrender.com/api
-
-# Supabase Configuration
-REACT_APP_SUPABASE_URL=your_supabase_url
-REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Google Maps API Key
+# Google Maps API Key (optional - required for map features)
 REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-
-# Firebase Configuration (if using Firebase)
-REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
-REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-REACT_APP_FIREBASE_PROJECT_ID=your_firebase_project_id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
-REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
 ```
 
 For the backend, create a `.env` file in the `backend` directory:
 
 ```
 NODE_ENV=development
-PORT=5000
-SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/eskan
 JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -173,9 +160,8 @@ For local development, the application uses `http://localhost:5000/api`. When de
    - Publish directory: `build`
 
 5. Add the required environment variables in Netlify's deploy settings:
-   - REACT_APP_API_URL 
-   - REACT_APP_SUPABASE_URL
-   - REACT_APP_SUPABASE_ANON_KEY
+   - REACT_APP_API_BASE_URL
+   - REACT_APP_WS_URL
    - REACT_APP_GOOGLE_MAPS_API_KEY
    - (Add any other required variables from your .env file)
 
@@ -188,8 +174,8 @@ For local development, the application uses `http://localhost:5000/api`. When de
 Common issues and solutions:
 
 1. **CORS errors**: Ensure your backend CORS configuration matches your frontend domain
-2. **Authentication issues**: Verify Supabase credentials and JWT configuration
-3. **Image upload fails**: Check Supabase storage bucket permissions
+2. **Authentication issues**: Verify JWT secret and backend configuration
+3. **Image upload fails**: Verify Cloudinary credentials and backend upload settings
 4. **Build fails**: Clear npm cache and node_modules, then reinstall
 
 ```bash
@@ -217,5 +203,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Design inspiration from various real estate websites
 - [Bootstrap](https://getbootstrap.com/) for the UI framework
-- [Supabase](https://supabase.io/) for backend services
 - [Express.js](https://expressjs.com/) for the API server

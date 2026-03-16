@@ -5,6 +5,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationBell from '../notifications/NotificationBell';
 import NotificationItem from '../notifications/NotificationItem';
+import { getProfileImageUrl } from '../../utils/imageUtils';
 
 const Sidebar = ({ 
   isOpen = false, 
@@ -203,7 +204,7 @@ const Sidebar = ({
               <div className="d-flex align-items-center">
                 {currentUser.profile?.profile_photo ? (
                   <img
-                    src={currentUser.profile.profile_photo}
+                    src={getProfileImageUrl(currentUser.profile.profile_photo)}
                     alt="Profile"
                     className="rounded-circle me-3"
                     style={{ width: '50px', height: '50px', objectFit: 'cover' }}

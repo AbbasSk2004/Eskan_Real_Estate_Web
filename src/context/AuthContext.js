@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import authService from '../services/auth';
 import { toast } from 'react-toastify';
-import authStorage from '../utils/authStorage';
-import { API_BASE_URL } from '../config/constants';
-
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
@@ -24,8 +21,9 @@ export const AuthProvider = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
   const [user, setUser] = useState(() => {
     // Initialize user state from storage if we have a valid token
-    if (authStorage.hasValidToken()) {
-      return authStorage.getUserData();
+    if (typeof window !== 'undefined' && sessionStorage.getItem('access_token')) {
+      const userData = sessionStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
     }
     return null;
   });
@@ -35,10 +33,17 @@ export const AuthProvider = ({ children }) => {
   const updateUserState = useCallback((userData) => {
     if (userData) {
       setUser(userData);
-      authStorage.setUserData(userData);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('user', JSON.stringify(userData));
+      }
     } else {
       setUser(null);
-      authStorage.clearAll();
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('provider');
+      }
     }
   }, []);
 
@@ -98,7 +103,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       // Get current auth token before logout
-      const token = authStorage.getToken('access_token');
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
       
       // Call the logout endpoint first
       await authService.logout();
@@ -106,9 +111,6 @@ export const AuthProvider = ({ children }) => {
       // authService.logout() already attempted to mark the user inactive.
       // We skip an additional request here to avoid duplicate /auth/update-status
       // calls that can trigger warnings once the token is invalidated.
-      
-      // Clear all auth data
-      authStorage.clearAll();
       
       // Clear any cached data
       if (window.localStorage) {
@@ -135,7 +137,6 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Logout error:', err);
       // Even if the logout request fails, clear local data
-      authStorage.clearAll();
       updateUserState(null);
       setError(err.message);
       toast.error('Failed to logout');
@@ -153,21 +154,21 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         // Check if we have tokens in storage
-        const accessToken = authStorage.getToken('access_token');
-        const refreshToken = authStorage.getToken('refresh_token');
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
+        const refreshToken = typeof window !== 'undefined' ? sessionStorage.getItem('refresh_token') : null;
         
         // If no tokens, clear any stale data and return
         if (!accessToken && !refreshToken) {
           console.log('Auth initialization - No tokens found');
-          authStorage.clearAll();
           updateUserState(null);
           setInitialized(true);
           return;
         }
 
         // Don't show loading if we already have a valid user
-        const hasValidToken = authStorage.hasValidToken();
-        const storedUser = authStorage.getUserData();
+        const hasValidToken = !!accessToken;
+        const storedUserData = typeof window !== 'undefined' ? sessionStorage.getItem('user') : null;
+        const storedUser = storedUserData ? JSON.parse(storedUserData) : null;
         const shouldShowLoading = !hasValidToken || !storedUser;
         
         if (shouldShowLoading) {
@@ -182,7 +183,6 @@ export const AuthProvider = ({ children }) => {
             updateUserState(storedUser);
           } else {
             // Token refresh failed, clear session
-            authStorage.clearAll();
             updateUserState(null);
           }
         } else if (refreshToken) {
@@ -192,23 +192,19 @@ export const AuthProvider = ({ children }) => {
             if (refreshResponse?.success) {
               updateUserState(refreshResponse.user);
             } else {
-              authStorage.clearAll();
               updateUserState(null);
             }
           } catch (refreshError) {
             console.error('Auth initialization - Token refresh error:', refreshError);
-            authStorage.clearAll();
             updateUserState(null);
           }
         } else {
           // No valid session, clear any stale data
-          authStorage.clearAll();
           updateUserState(null);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
         setError(err.message);
-        authStorage.clearAll();
         updateUserState(null);
       } finally {
         setLoading(false);
@@ -221,7 +217,7 @@ export const AuthProvider = ({ children }) => {
 
   // Whenever authentication state becomes active, mark profile status as active
   useEffect(() => {
-    if (user && authStorage.getAccessToken()) {
+    if (user && typeof window !== 'undefined' && sessionStorage.getItem('access_token')) {
       // Update active status silently (no need to await)
       import('../services/auth').then(({ default: authService }) => {
         authService.updateStatus?.('active');

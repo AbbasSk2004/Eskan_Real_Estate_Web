@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
+import { getProfileImageUrl } from '../../utils/imageUtils';
 
 const MessageList = ({ messages = [], currentUser }) => {
   const messagesEndRef = useRef(null);
@@ -43,7 +44,7 @@ const MessageList = ({ messages = [], currentUser }) => {
               {!isSentByMe && (
                 <div className="d-flex align-items-center mb-1">
                   <img
-                    src={sender?.profile_photo || '/default-avatar.png'}
+                    src={getProfileImageUrl(sender?.profile_photo)}
                     alt={`${sender?.firstname || 'User'} ${sender?.lastname || ''}`}
                     className="rounded-circle"
                     width="24"

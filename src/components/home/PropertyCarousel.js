@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecommendedProperties } from '../../services/recommendation';
 import { useAuth } from '../../context/AuthContext';
+import { getImageUrl } from '../../utils/imageUtils';
 import '../../assets/css/PropertyCarousel.css';
 
 const PropertyCarousel = () => {
@@ -192,7 +193,7 @@ const PropertyCarousel = () => {
               <div key={property.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
                 <div className="carousel-image-container">
                   <img 
-                    src={property.main_image || '/img/property-placeholder.jpg'} 
+                    src={getImageUrl(property.main_image)} 
                     className="d-block w-100" 
                     alt={property.title || 'Property Image'}
                     onError={(e) => {

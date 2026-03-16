@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import { endpoints } from '../../services/api';
+import { getImageUrl } from '../../utils/imageUtils';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Testimonials.css';
@@ -85,8 +86,8 @@ const TestimonialsCarousel = () => {
                 <div className="bg-light rounded p-4">
                   <div className="d-flex align-items-center mb-3 mb-md-4">
                     <img
-                      src={testimonial.profiles.profile_photo || '/img/default-profile.jpg'}
-                      alt={`${testimonial.profiles.firstname} ${testimonial.profiles.lastname}`}
+                      src={getImageUrl(testimonial.profiles?.profile_photo)}
+                      alt={`${testimonial.profiles?.firstname || ''} ${testimonial.profiles?.lastname || ''}`.trim()}
                       className="testimonial-profile-img flex-shrink-0"
                       onError={(e) => {
                         e.target.onerror = null;

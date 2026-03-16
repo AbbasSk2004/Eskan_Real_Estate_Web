@@ -18,7 +18,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ChangePassword from '../components/profile/change_password';
 
 const Profile = () => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, updateUserState } = useAuth();
   const { properties, loading: propertiesLoading, refetchProperties } = useUserProperties();
   const { favorites, loading: favoritesLoading, refetchFavorites } = useUserFavorites();
   const [loading, setLoading] = useState(false);
@@ -117,7 +117,7 @@ const Profile = () => {
           ) : (
             <ProfileHeader 
               currentUser={user} 
-              setUser={setUser} 
+              updateUserState={updateUserState}
               onChangePassword={handleToggleChangePassword}
             />
           )}

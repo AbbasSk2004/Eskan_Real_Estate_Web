@@ -1,7 +1,4 @@
-import axios from 'axios';
 import api from './api';
-
-const API_URL = process.env.REACT_APP_API_URL;
 
 export const PropertyInquiryService = {
   // Get all inquiries for a specific property

@@ -6,7 +6,7 @@ import { propertyService } from '../../services/propertyService';
 import { toast } from 'react-toastify';
 import PropertyCard from './PropertyCard';
 import LoadingSpinner from '../common/LoadingSpinner';
-import authStorage from '../../utils/authStorage';
+
 
 const PropertiesTab = () => {
   const [properties, setProperties] = useState([]);
@@ -24,7 +24,7 @@ const PropertiesTab = () => {
       setError(null);
 
       // Check if user is authenticated
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
       if (!accessToken) {
         setProperties([]);
         setError('Please log in to view your properties');

@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { FiMessageSquare, FiTrash2 } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { useGlobalChat } from '../../context/ChatContext';
+import { getProfileImageUrl } from '../../utils/imageUtils';
 
 const ConversationList = ({ conversations = [], activeConversation, onSelectConversation, loading, currentUser }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,7 +81,7 @@ const ConversationList = ({ conversations = [], activeConversation, onSelectConv
               <div className="d-flex align-items-start">
                 <div className="position-relative">
                   <img
-                    src={otherParticipant?.profile_photo || '/default-avatar.png'}
+                    src={getProfileImageUrl(otherParticipant?.profile_photo)}
                     alt={`${otherParticipant?.firstname || 'User'} ${otherParticipant?.lastname || ''}`}
                     className="rounded-circle"
                     width="40"

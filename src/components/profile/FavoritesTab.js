@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { endpoints } from '../../services/api';
-import authStorage from '../../utils/authStorage';
+
 
 const FavoritesTab = () => {
   const [favorites, setFavorites] = useState([]);
@@ -24,7 +24,7 @@ const FavoritesTab = () => {
         setError(null);
 
         // Check if user is authenticated
-        const accessToken = authStorage.getAccessToken();
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
         if (!accessToken) {
           setFavorites([]);
           setError('Please log in to view your favorites');

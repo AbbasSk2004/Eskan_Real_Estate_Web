@@ -66,13 +66,14 @@ export const storeUserPreferences = (filters) => {
 // Store viewed property in local storage and send to server
 export const storeViewedProperty = async (property) => {
   try {
-    if (!property || !property.id) return;
+    const propertyId = property?.id || property?._id;
+    if (!property || !propertyId) return;
     
     // Store locally
     const viewedProperties = JSON.parse(localStorage.getItem(VIEWED_PROPERTIES_KEY) || '[]');
     
     // Check if property is already in the list
-    const existingIndex = viewedProperties.findIndex(p => p.id === property.id);
+    const existingIndex = viewedProperties.findIndex(p => p.id === propertyId);
     
     // If exists, remove it to add it to the front (most recent)
     if (existingIndex !== -1) {
@@ -81,7 +82,7 @@ export const storeViewedProperty = async (property) => {
     
     // Add property to front with timestamp
     const propertyWithTimestamp = {
-      id: property.id,
+      id: propertyId,
       property_type: property.property_type,
       price: property.price,
       governate: property.governate,
@@ -98,7 +99,7 @@ export const storeViewedProperty = async (property) => {
 
     // Send to server
     try {
-      await api.post(`/property-views/${property.id}`);
+      await api.post(`/property-views/${propertyId}`);
     } catch (error) {
       // Fail silently - local storage will serve as backup
       console.warn('Failed to store view on server:', error);

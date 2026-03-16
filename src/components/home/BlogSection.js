@@ -57,7 +57,7 @@ const BlogSection = () => {
 
         <div className="row g-3 g-md-4">
           {blogs.map(blog => (
-            <div key={blog.id} className="col-12 col-sm-6 col-lg-4 mb-3 mb-md-4">
+            <div key={blog.id || blog._id} className="col-12 col-sm-6 col-lg-4 mb-3 mb-md-4">
               <BlogCard blog={blog} />
             </div>
           ))}

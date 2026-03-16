@@ -4,7 +4,7 @@ import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import { endpoints } from '../../services/api';
 import { useToast } from '../../hooks/useToast';
-import authStorage from '../../utils/authStorage';
+
 
 const OverviewTab = ({ agentApplication }) => {
   const [stats, setStats] = useState({
@@ -26,7 +26,7 @@ const OverviewTab = ({ agentApplication }) => {
       setError(null);
 
       // Check if user is authenticated
-      const accessToken = authStorage.getAccessToken();
+      const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null;
       if (!accessToken) {
         setStats({
           totalViews: 0,
