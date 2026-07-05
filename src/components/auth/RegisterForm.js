@@ -117,8 +117,8 @@ const RegisterForm = () => {
       const response = await authService.register({
         email: formData.email,
         password: formData.password,
-        firstname: capitalizedFirstName,
-        lastname: capitalizedLastName,
+        firstName: capitalizedFirstName,
+        lastName: capitalizedLastName,
         phone: formData.phone
       });
 

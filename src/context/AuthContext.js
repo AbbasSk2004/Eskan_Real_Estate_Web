@@ -71,8 +71,9 @@ export const AuthProvider = ({ children }) => {
       throw new Error(response.message || 'Login failed');
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.message);
-      toast.error(err.message || 'Failed to login');
+      const message = err?.response?.data?.message || err.message;
+      setError(message);
+      toast.error(message || 'Failed to login');
       throw err;
     } finally {
       setLoading(false);

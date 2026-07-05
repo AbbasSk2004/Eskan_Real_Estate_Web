@@ -164,13 +164,17 @@ class AuthService {
     const response = await api.post('/auth/login', { email, password });
     if (response.data?.success) {
       const { user, session } = response.data;
+      const normalizedUser = {
+        ...user,
+        id: user?.id || user?._id
+      };
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('provider', 'backend');
         sessionStorage.setItem('access_token', session.access_token);
         if (session.refresh_token) {
           sessionStorage.setItem('refresh_token', session.refresh_token);
         }
-        sessionStorage.setItem('user', JSON.stringify(user));
+        sessionStorage.setItem('user', JSON.stringify(normalizedUser));
       }
 
       // Mark user as active right after storing the session so that the
@@ -181,7 +185,7 @@ class AuthService {
         // Non-blocking – avoid failing the login flow due to a status hiccup.
       }
 
-      return { success: true, user, token: session.access_token };
+      return { success: true, user: normalizedUser, token: session.access_token };
     }
     throw new Error(response.data?.message || 'Login failed');
   }

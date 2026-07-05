@@ -18,6 +18,16 @@ const removeSessionItem = (key) => {
 
 const getAccessToken = () => getSessionItem('access_token');
 const getRefreshToken = () => getSessionItem('refresh_token');
+const getCurrentUserId = () => {
+  const userData = getSessionItem('user');
+  if (!userData) return null;
+  try {
+    const user = JSON.parse(userData);
+    return user?.id || user?._id || null;
+  } catch (_) {
+    return null;
+  }
+};
 const setTokens = (accessToken, refreshToken) => {
   if (accessToken) setSessionItem('access_token', accessToken);
   if (refreshToken) setSessionItem('refresh_token', refreshToken);
@@ -375,7 +385,11 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
+        const userId = getCurrentUserId();
+        const response = await api.post('/auth/refresh', {
+          refresh_token: refreshToken,
+          ...(userId ? { userId } : {})
+        });
         if (response.data?.success) {
           const { access_token, refresh_token } = response.data;
           setTokens(access_token, refresh_token);

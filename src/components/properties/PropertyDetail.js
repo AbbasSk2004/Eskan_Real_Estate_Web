@@ -5,7 +5,6 @@ import { useToast } from '../../hooks/useToast';
 import { useGlobalChat } from '../../context/ChatContext';
 import { formatPrice } from '../../utils/formatters';
 import { storeViewedProperty } from '../../services/recommendation';
-import PropertyMap from '../properties/PropertyMap';
 import FavoriteButton from '../common/FavoriteButton';
 import ShareProperty from '../properties/ShareProperty';
 import PropertyImageGallery from '../properties/PropertyImageGallery';
@@ -685,7 +684,7 @@ const PropertyDetail = () => {
                   </div>
                 </div>
 
-                {/* Property Features */}
+                    {/* Property Features */}
                 {property.features && Object.keys(property.features).length > 0 && (
                   <div className="property-features bg-white rounded-3 shadow-sm p-4 mb-4">
                     <h3 className="h4 fw-bold mb-3">
@@ -713,19 +712,7 @@ const PropertyDetail = () => {
                   </div>
                 )}
 
-                {/* Location Map */}
-                {property.location_url && (
-                  <div className="property-location bg-white rounded-3 shadow-sm p-4 mb-4">
-                    <PropertyMap 
-                      locationUrl={property.location_url}
-                      address={property.address}
-                      city={property.city}
-                      governate={property.governate}
-                    />
-                  </div>
-                )}
               </div>
-
               {/* Sidebar */}
               {(!user || (property.profiles?.profiles_id !== user.id && property.profiles_id !== user.id)) && (
                 <div className="col-lg-4">

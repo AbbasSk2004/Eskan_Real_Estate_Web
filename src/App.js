@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ChatProvider, useGlobalChat } from './context/ChatContext';
-import { GoogleMapsProvider } from './components/shared/GoogleMapsLoader';
 import toast from 'react-hot-toast';
 import ScrollToTop from './components/common/ScrollToTop';
 import BackToTop from './components/common/BackToTop';
@@ -194,9 +193,7 @@ function App() {
               
                 <NotificationProvider>
                   <ChatProvider>
-                    <GoogleMapsProvider>
-                      <AppContent />
-                    </GoogleMapsProvider>
+                    <AppContent />
                   </ChatProvider>
                 </NotificationProvider>
               

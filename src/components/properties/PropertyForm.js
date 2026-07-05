@@ -219,11 +219,6 @@ function AddPropertyForm({ onSubmitSuccess }) {
     }
   };
 
-  // Add location URL field
-  const handleLocationUrlChange = (e) => {
-    setForm({ ...form, location_url: e.target.value });
-  };
-
   // Image upload handler
   const handleImageUpload = async (file) => {
     try {
@@ -495,11 +490,6 @@ function AddPropertyForm({ onSubmitSuccess }) {
         });
       }
 
-      // Add location URL if exists
-      if (form.location_url) {
-        formData.append('location_url', form.location_url);
-      }
-
       // Make API call with proper error handling
       const response = await propertyService.createProperty(formData);
 
@@ -726,22 +716,6 @@ function AddPropertyForm({ onSubmitSuccess }) {
                           onChange={handleInputChange}
                         />
                         <label htmlFor="address">Detailed Address</label>
-                      </div>
-                    </div>
-                   
-                   
-                    <div className="col-md-6">
-                      <div className="form-floating">
-                        <input
-                          type="url"
-                          className="form-control"
-                          id="location_url"
-                          name="location_url"
-                          placeholder="Enter Google Maps URL"
-                          value={form.location_url || ''}
-                          onChange={handleLocationUrlChange}
-                        />
-                        <label htmlFor="location_url">Location URL</label>
                       </div>
                     </div>
                     <div className="col-12">

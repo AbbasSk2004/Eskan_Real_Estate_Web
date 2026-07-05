@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ContactForm from '../components/contact/ContactForm';
 import ContactInfo from '../components/contact/ContactInfo';
-import Map from '../components/contact/Map';
 import FAQ from '../components/common/FAQ';
 import { faqService } from '../services/faqService';
 
@@ -9,12 +8,6 @@ const Contact = () => {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Office location coordinates (Beirut Central District)
-  const officeLocation = {
-    lat: 33.8938,
-    lng: 35.5018
-  };
 
   useEffect(() => {
     const fetchFaqs = async () => {
@@ -118,37 +111,7 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Map Section */}
-      <div className="container-fluid py-5 bg-light">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-10">
-              <div className="text-center mb-5">
-                <h2 className="text-primary">Find Us</h2>
-                <p className="text-muted">
-                  Visit our office for personalized real estate consultation
-                </p>
-              </div>
-              
-              <Map 
-                height="500px"
-                center={officeLocation}
-                zoom={15}
-                markers={[
-                  {
-                    id: 'office',
-                    lat: officeLocation.lat,
-                    lng: officeLocation.lng,
-                    title: 'ESKAN Real Estate Office',
-                    description: 'Beirut Central District, Lebanon',
-                    icon: 'building'
-                  }
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* FAQ Section */}
       <div className="container py-5" id="faqs">
