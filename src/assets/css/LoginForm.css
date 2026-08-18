@@ -1,0 +1,79 @@
+.social-login .divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.social-login .divider .line {
+  display: inline-block;
+  width: 100px;
+  height: 1px;
+  background: #dee2e6;
+  vertical-align: middle;
+}
+
+.social-login .divider span {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.form-floating > label {
+  color: #6c757d;
+}
+
+.form-control:focus {
+  border-color: #00B98E;
+  box-shadow: 0 0 0 0.25rem rgba(0, 185, 142, .25);
+}
+
+.btn-primary {
+  background-color: #00B98E;
+  border-color: #00B98E;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #009e7a;
+  border-color: #009e7a;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.btn-outline-primary:hover {
+  background-color: #00B98E;
+  border-color: #00B98E;
+  color: white;
+}
+
+.text-primary {
+  color: #00B98E !important;
+}
+
+a.text-primary:hover {
+  color: #009e7a !important;
+}
+
+.form-check-input:checked {
+  background-color: #00B98E;
+  border-color: #00B98E;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.alert {
+  border-radius: 0.5rem;
+}
+
+.alert-danger {
+  background-color: #fff5f5;
+  border-color: #fecdcd;
+  color: #dc3545;
+}
+

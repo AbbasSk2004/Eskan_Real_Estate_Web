@@ -1,0 +1,61 @@
+{
+  "name": "real-estate-react",
+  "version": "2.0.0",
+  "description": "ESKAN real estate web platform — Next.js App Router with ISR and on-demand cache revalidation",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write src/**/*.{js,jsx,json,css,md} app/**/*.{js,jsx,json,css,md} lib/**/*.js",
+    "server": "npm --prefix ../backend run dev",
+    "install-all": "npm install && npm --prefix ../backend install"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "animate.css": "^4.1.1",
+    "axios": "^1.6.0",
+    "bootstrap": "^5.3.6",
+    "bootstrap-icons": "^1.13.1",
+    "date-fns": "^4.4.0",
+    "font-awesome": "^4.7.0",
+    "lodash": "^4.18.1",
+    "next": "14.2.32",
+    "prop-types": "^15.8.1",
+    "react": "18.3.1",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
+    "react-slick": "^0.30.3",
+    "react-toastify": "^11.0.5",
+    "remark-gfm": "^4.0.1",
+    "slick-carousel": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.32",
+    "prettier": "^3.0.3",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "real-estate",
+    "nextjs",
+    "isr",
+    "seo",
+    "property-listing"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbbasSk2004/ESKAN_Real_Estate.git"
+  }
+}

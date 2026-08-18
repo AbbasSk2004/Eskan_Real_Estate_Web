@@ -1,0 +1,29 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Font Family Variables */
+:root {
+  --font-primary: 'Heebo', sans-serif;
+  --font-heading: 'Inter', sans-serif;
+  --font-secondary: 'Montserrat', sans-serif;
+  --font-special: 'Orbitron', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+}
+
+/* Apply default font styles */
+body {
+  font-family: var(--font-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.font-special {
+  font-family: var(--font-special);
+}
+
+.font-body {
+  font-family: var(--font-body);
+} 

@@ -1,0 +1,36 @@
+/* Styles for scrollable areas */
+.scrollable-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #c1c1c1 #f1f1f1; /* Firefox */
+}
+
+/* Webkit scrollbar styles */
+.scrollable-y::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-y::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.scrollable-y::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.scrollable-y::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* No scrollbar style */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

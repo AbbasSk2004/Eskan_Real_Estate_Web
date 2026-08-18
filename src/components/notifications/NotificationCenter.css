@@ -1,0 +1,168 @@
+.notification-bell {
+  position: relative;
+  z-index: 1000;
+}
+
+.notification-center {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  max-width: 400px;
+  min-width: 320px;
+  z-index: 1000;
+  width: 400px;
+  max-height: 600px;
+}
+
+.notification-center .header {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.notification-center .content {
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.notification-center .content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-center .content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-center .content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.notification-center .content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.notification-center .empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.notification-center .loading-state {
+  padding: 2rem;
+  text-align: center;
+}
+
+.notification-center .error-state {
+  padding: 2rem;
+  text-align: center;
+  color: #dc3545;
+}
+
+.notification-center .btn-close {
+  padding: 0.5rem;
+  margin: -0.5rem -0.5rem -0.5rem auto;
+}
+
+.notification-center .view-all-btn {
+  color: #00B98E;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.notification-center .view-all-btn:hover {
+  text-decoration: underline;
+}
+
+/* Animation for notifications */
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.notification-center .notification-item {
+  animation: slideIn 0.2s ease-out;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notification-item.unread {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.notification-item.unread:hover {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Loading state styles */
+.notification-bell .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.notification-bell .fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .notification-center {
+    position: fixed !important;
+    top: 60px !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 60px) !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .notification-center .content {
+    max-height: calc(100vh - 120px) !important;
+  }
+}
+
+/* Fullscreen variant when used inside Sidebar mobile modal (works on any viewport width) */
+.notification-center--fullscreen {
+  position: fixed !important;
+  top: 60px !important; /* leave space for navbar */
+  right: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: calc(100vh - 60px) !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 1101; /* above the dark overlay */
+}
+
+.notification-center--fullscreen .notification-center-content {
+  max-height: calc(100vh - 120px) !important;
+} 

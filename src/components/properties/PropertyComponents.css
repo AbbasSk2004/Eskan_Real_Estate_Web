@@ -1,0 +1,180 @@
+/* Property Gallery Styles */
+.property-gallery .gallery-main {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.property-gallery .gallery-main:hover {
+  transform: scale(1.02);
+}
+
+.property-gallery .gallery-thumb {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.property-gallery .gallery-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Property Card Styles */
+.property-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 45px rgba(0, 0, 0, .15) !important;
+}
+
+.property-card .property-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.property-card .card-img-top {
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.property-card:hover .card-img-top {
+  transform: scale(1.1);
+}
+
+.property-card .badge {
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1;
+  
+}
+
+.property-card .text-primary {
+  color: #00B98E !important;
+}
+
+.property-card .bg-primary {
+  background-color: #00B98E !important;
+}
+
+.property-card .fa {
+  color: #00B98E;
+}
+
+.property-card .border-top {
+  border-top: 1px solid #DEE2E6 !important;
+}
+
+.property-card .border-end {
+  border-right: 1px solid #DEE2E6 !important;
+}
+
+/* Property Features Styles */
+.property-features .feature-item {
+  transition: background-color 0.2s ease;
+}
+
+.property-features .feature-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Property Form Styles */
+.property-form .form-control:focus,
+.property-form .form-select:focus {
+  border-color: #00B98E;
+  box-shadow: 0 0 0 0.2rem rgba(0, 185, 142, 0.25);
+}
+
+/* Share Property Dropdown */
+.share-property .dropdown-menu {
+  min-width: 200px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.share-property .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .property-gallery .gallery-main {
+    height: 250px !important;
+  }
+  
+  .property-card .card-img-top {
+    height: 180px !important;
+  }
+  
+  .property-card .property-image {
+    height: 200px !important;
+  }
+}
+
+/* Animation classes */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Utility classes */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+/* Map Container Styles */
+.property-location {
+  margin-bottom: 30px;
+}
+
+.property-location .map-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.property-location .alert {
+  margin: 0;
+  border-radius: 8px;
+}
+
+/* Fix for the property status badge width */
+.position-absolute.top-0.start-0.badge {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  white-space: nowrap !important;
+ height: fit-content;
+}
+
+/* Fix for the view count badge width */
+.position-absolute.top-0.end-0.badge {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  white-space: nowrap !important;
+}

@@ -1,0 +1,45 @@
+.similar-properties {
+  position: relative;
+}
+
+/* Center each slide and give some spacing */
+.similar-properties-slider .slick-slide > div {
+  display: flex;
+  justify-content: center;
+}
+
+/* Ensure cards take full width of their wrapper */
+.similar-properties .card {
+  width: 100%;
+  max-width: 380px; /* wider than default grid card */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.similar-properties .card-body {
+  flex: 1 1 auto; /* grow to fill available space */
+}
+
+.similar-properties-slider .slick-track {
+  display: flex !important; /* make all slides share same flex row height */
+}
+
+/* Each slide should stretch to the track height */
+.similar-properties-slider .slick-slide {
+  height: inherit !important;
+  display: flex !important;
+}
+
+/* Wrapper inside slide also stretches */
+.similar-properties-slider .slick-slide > div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .similar-properties .card {
+    max-width: 100% !important;
+  }
+} 

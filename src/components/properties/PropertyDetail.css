@@ -1,0 +1,116 @@
+.property-detail-page {
+  background-color: #f8f9fa;
+  margin-left: 5rem;
+  margin-right: 5rem;
+}
+.agent-avatar {
+  border: none !important;          /* Remove any border */
+  background: transparent !important; /* Remove background */
+  padding: 0 !important;            /* Remove padding */
+  display: inline-block;            /* Wrap tightly */
+  border-radius: 50%;               /* Ensure container is circular */
+}
+
+/* Badge container */
+.badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; /* Vertically center badges */
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Property badge styles */
+.property-badge {
+  flex: 0 0 auto;      /* Prevent shrinking and growing */
+  display: flex;       /* Align contents properly */
+}
+
+/* Make sure the badge itself stays in normal flow (no accidental absolute positioning from other libs) */
+.property-badge .badge {
+  position: static;
+}
+
+.property-header .badge {
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.property-description .description-content p {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.3rem;          /* 16px - comfortable reading size */
+  line-height: 1.6;         /* good spacing between lines */
+  color: #555555;           /* a soft, muted dark gray for less harshness */
+  letter-spacing: 0.02em;   /* subtle letter spacing for readability */
+}
+
+.property-header {
+  position: relative;
+  z-index: 1;
+}
+
+.key-details-grid .detail-item {
+  transition: all 0.3s ease;
+}
+
+.key-details-grid .detail-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.owner-avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  background-color: #f8f9fa;
+}
+
+/* Unified content surface — one card, sections divided by hairline borders */
+.property-card-main {
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.property-card-main .property-section {
+  padding: 1.5rem;
+}
+
+.property-card-main .property-section + .property-section {
+  border-top: 1px solid #eef0f2;
+}
+
+.similar-properties-section .property-card {
+  transition: transform 0.3s ease;
+}
+
+.similar-properties-section .property-card:hover {
+  transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .property-gallery-section {
+    height: 50vh;
+  }
+
+  .property-detail-page {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  
+  /* Mobile badge container */
+  .badge-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* --- Specific tweak for the "For Sale" status badge --- */
+.property-badge .badge.bg-success {
+  height: auto;          /* Let height shrink/grow to the text */
+  line-height: 1;        /* Remove extra vertical space */
+  padding-top: 0.35rem;  /* Optional: keep similar vertical padding */
+  padding-bottom: 0.35rem;
+}

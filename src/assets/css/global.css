@@ -1,0 +1,34 @@
+/* Global styles */
+html {
+  overflow-y: scroll; /* Keep the main scrollbar always visible */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll only */
+  overflow-y: visible; /* Allow vertical scroll to work with html */
+}
+
+/* Container styles */
+.container,
+.container-fluid {
+  width: 100%;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Row adjustments */
+.row {
+  margin-right: calc(var(--bs-gutter-x) / -2);
+  margin-left: calc(var(--bs-gutter-x) / -2);
+}
+
+/* Column adjustments */
+.row > * {
+  padding-right: calc(var(--bs-gutter-x) / 2);
+  padding-left: calc(var(--bs-gutter-x) / 2);
+}

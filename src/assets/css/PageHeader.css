@@ -1,0 +1,41 @@
+.header .mt-lg-5 {
+  padding-top: 120px !important;
+}
+
+.page-header-inner {
+  background: rgba(0, 0, 0, .5);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #FFFFFF;
+}
+
+.breadcrumb-text h1 {
+  font-size: 45px;
+  margin-bottom: 15px;
+}
+
+.breadcrumb-text .breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item {
+  color: #FFFFFF;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.breadcrumb-item.active {
+  color: #FFFFFF;
+}
+
+.breadcrumb-item a {
+  transition: .5s;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--primary) !important;
+} 
