@@ -156,6 +156,17 @@ const PropertyCarousel = ({ initialProperties }) => {
                   </div>
                 </div>
               </Carousel.Caption>
+              {/* Mobile tap target: the whole slide navigates, since the
+                  visible "View Details" button is hidden below 768px. Sits
+                  under the arrows and dots so those stay operable. */}
+              <Link
+                href={`/properties/${property.slug || property.id}`}
+                className="slide-tap-target"
+              >
+                <span className="visually-hidden">
+                  View details for {property.title || 'this property'}
+                </span>
+              </Link>
             </Carousel.Item>
           ))}
         </Carousel>

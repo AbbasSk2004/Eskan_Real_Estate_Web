@@ -87,7 +87,9 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
-  padding: 25px !important;
+  /* Bottom padding reserves the indicator strip, so the dots never share a
+     line with the price / CTA row. */
+  padding: 18px 25px 32px !important;
   max-width: 80% !important;
   margin: 0 auto !important;
   position: relative !important;
@@ -107,8 +109,8 @@
 .carousel-caption h3 {
   font-family: 'Poppins', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 2.2rem !important;
-  margin-bottom: 10px !important;
+  font-size: 1.9rem !important;
+  margin-bottom: 6px !important;
   color: white !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
@@ -118,8 +120,23 @@
   font-weight: 500 !important;
   font-size: 1.1rem !important;
   color: #f0f0f0 !important;
-  margin-bottom: 15px !important;
+  margin-bottom: 8px !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Price and CTA share one row at every breakpoint. This is what keeps the
+   overlay short — it also lets the button stay in normal flow instead of being
+   absolutely pinned to a hand-tuned bottom offset. */
+.carousel-caption .caption-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  gap: 16px !important;
+}
+
+.carousel-caption .caption-actions .price {
+  margin-bottom: 0 !important;
 }
 
 .carousel-caption .btn {
@@ -128,9 +145,8 @@
   font-weight: 600 !important;
   padding: 8px 20px !important;
   font-size: 1rem !important;
-  position: absolute !important;
-  right: 0 !important;
-  bottom: 40px !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 .carousel-caption .btn:hover {
@@ -139,10 +155,21 @@
   transform: translateY(-2px) !important;
 }
 
+/* Full-slide tap target (mobile only — desktop uses the visible CTA button).
+   Declared here so the z-index relationship with the controls is obvious:
+   overlay sits at 1, dots and arrows at 3, so those remain clickable. */
+.carousel-item .slide-tap-target {
+  display: none;
+}
+
 /* Carousel Controls Styles */
 .carousel-indicators {
-  bottom: 20px !important;
-  z-index: 2 !important;
+  /* Bootstrap ships margin-bottom: 1rem here, which silently added 16px to
+     whatever `bottom` was set — that is what kept pushing the dots up onto the
+     price row (on desktop too). Zero it so `bottom` means what it says. */
+  bottom: 12px !important;
+  margin-bottom: 0 !important;
+  z-index: 3 !important;
 }
 
 .carousel-indicators button {
@@ -163,7 +190,7 @@
   width: 5% !important;
   opacity: 0.8 !important;
   transition: opacity 0.3s ease !important;
-  z-index: 2 !important;
+  z-index: 3 !important;
 }
 
 .carousel-control-prev:hover,
@@ -226,7 +253,6 @@
   .carousel-caption .btn {
     padding: 6px 15px !important;
     font-size: 0.9rem !important;
-    bottom: 30px !important;
   }
 }
 
@@ -253,61 +279,65 @@
     padding-top: 70%;
   }
   
+  /* No scrim on mobile: the gradient covered too much of a small image. Text
+     legibility is carried by a stronger shadow instead (see below). */
+  .carousel-caption {
+    background: transparent !important;
+  }
+
+  /* Compensates for the removed scrim — without this, white text over a bright
+     photo fails contrast. */
+  .carousel-caption h3 {
+    font-size: 1.3rem !important;
+    margin-bottom: 4px !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 14px rgba(0, 0, 0, 0.75) !important;
+  }
+
+  .carousel-caption p {
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 14px rgba(0, 0, 0, 0.75) !important;
+  }
+
+  /* Whole slide is the tap target on mobile, so the visible CTA is dropped. */
+  .carousel-item .slide-tap-target {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .carousel-caption .caption-actions .btn {
+    display: none !important;
+  }
+
   .carousel-caption .caption-content {
-    padding: 16px !important;
-    /* Only the indicator dots need clearance now that the price and button
-       share a row — keep the gradient tight against the content. */
-    padding-bottom: 30px !important;
+    /* 24px bottom keeps the price clear of the dot strip below it. */
+    padding: 14px 16px 24px !important;
     max-width: 100% !important;
   }
 
-  /* Price and "View Details" on one line, so the gradient overlay stops
-     climbing four rows up the image. */
   .carousel-caption .caption-actions {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100% !important;
     gap: 12px !important;
   }
 
-  .carousel-caption .caption-actions .price {
-    margin-bottom: 0 !important;
-  }
-  
-  .carousel-caption h3 {
-    font-size: 1.3rem !important;
-    margin-bottom: 5px !important;
-  }
-  
-  .carousel-caption p {
-    font-size: 0.9rem !important;
-    margin-bottom: 10px !important;
-  }
-  
-  .carousel-caption .btn {
-    position: relative !important;
-    right: auto !important;
-    bottom: auto !important;
-    align-self: center !important;
-    margin: 0 !important;
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-  }
-  
   .carousel-control-prev-icon,
   .carousel-control-next-icon {
     width: 2rem !important;
     height: 2rem !important;
   }
-  
+
+  /* Sits on its own line beneath the price — never alongside it. */
   .carousel-indicators {
-    bottom: 10px !important;
+    bottom: 4px !important;
   }
-  
+
   .carousel-indicators button {
-    width: 10px !important;
-    height: 10px !important;
+    width: 8px !important;
+    height: 8px !important;
     margin: 0 3px !important;
   }
 }
@@ -342,21 +372,19 @@
   }
   
   .carousel-caption .caption-content {
-    padding: 12px 14px !important;
-    padding-bottom: 26px !important;
+    padding: 12px 14px 22px !important;
   }
-  
+
   .carousel-caption h3 {
     font-size: 1.1rem !important;
   }
-  
+
   .carousel-caption p:not(.price) {
     display: none !important;
   }
-  
+
   .carousel-caption .price {
     font-size: 0.85rem !important;
-    margin-bottom: 6px !important;
   }
   
   .carousel-caption .btn {
