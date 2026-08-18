@@ -105,6 +105,18 @@
     flex-direction: column;
     gap: 8px;
   }
+
+  /* Two features per row (col-6) leaves little width, so tighten the gap and
+     let long single-word labels ("AirConditioning") wrap instead of overflow. */
+  .property-features .feature-icon {
+    margin-right: 0.5rem !important;
+  }
+
+  .property-features .feature-text {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* --- Specific tweak for the "For Sale" status badge --- */

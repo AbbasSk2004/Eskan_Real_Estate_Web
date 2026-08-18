@@ -622,7 +622,7 @@ const PropertyDetail = ({ initialProperty }) => {
                       <div className="row g-3">
                         {Object.entries(property.features).map(([key, value]) => (
                           value && (
-                            <div key={key} className="col-md-6 col-lg-4">
+                            <div key={key} className="col-6 col-md-6 col-lg-4">
                               <div className="feature-item d-flex align-items-center p-2 rounded-2 bg-light">
                                 <div className="feature-icon me-3">
                                   <i className="fas fa-check-circle text-success"></i>

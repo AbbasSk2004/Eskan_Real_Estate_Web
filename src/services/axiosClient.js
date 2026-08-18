@@ -46,6 +46,7 @@ const publicEndpoints = [
   '/auth/login',
   '/auth/register',
   '/auth/refresh',
+  '/auth/verify',  // Session probe: its 401 must not trigger a retry-refresh
   '/contact',
   '/faqs',
   '/faqs/featured',

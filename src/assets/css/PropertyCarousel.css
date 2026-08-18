@@ -254,8 +254,25 @@
   }
   
   .carousel-caption .caption-content {
-    padding: 20px !important;
-    max-width: 90% !important;
+    padding: 16px !important;
+    /* Only the indicator dots need clearance now that the price and button
+       share a row — keep the gradient tight against the content. */
+    padding-bottom: 30px !important;
+    max-width: 100% !important;
+  }
+
+  /* Price and "View Details" on one line, so the gradient overlay stops
+     climbing four rows up the image. */
+  .carousel-caption .caption-actions {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .carousel-caption .caption-actions .price {
+    margin-bottom: 0 !important;
   }
   
   .carousel-caption h3 {
@@ -272,7 +289,10 @@
     position: relative !important;
     right: auto !important;
     bottom: auto !important;
-    align-self: flex-start !important;
+    align-self: center !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
   
   .carousel-control-prev-icon,
@@ -322,7 +342,8 @@
   }
   
   .carousel-caption .caption-content {
-    padding: 15px !important;
+    padding: 12px 14px !important;
+    padding-bottom: 26px !important;
   }
   
   .carousel-caption h3 {
@@ -335,7 +356,7 @@
   
   .carousel-caption .price {
     font-size: 0.85rem !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
   }
   
   .carousel-caption .btn {
@@ -348,4 +369,15 @@
     width: 1.5rem !important;
     height: 1.5rem !important;
   }
-} 
+}
+
+/* Desktop/tablet: cap the slide height. The base 50% padding-top aspect ratio
+   made the slide ~850px tall on a wide viewport. Placed last so it overrides
+   the padding-top set in the max-width blocks above where they overlap.
+   The image is already absolutely positioned with object-fit: cover. */
+@media (min-width: 769px) {
+  .carousel-image-container {
+    padding-top: 0 !important;
+    height: 70vh !important;
+  }
+}

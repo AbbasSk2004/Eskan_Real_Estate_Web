@@ -2,12 +2,18 @@ import api from './axiosClient';
 
 const getApiBaseUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+// Cross-tab hint that a session *may* exist. The real tokens are HttpOnly so JS
+// cannot see them, and sessionStorage is per-tab — this lets guests skip the
+// verify/refresh round-trip entirely while new tabs still restore a session.
+const SESSION_HINT_KEY = 'has_session';
+
 const clearStoredSession = () => {
   if (typeof window === 'undefined') return;
   sessionStorage.removeItem('access_token');
   sessionStorage.removeItem('refresh_token');
   sessionStorage.removeItem('user');
   sessionStorage.removeItem('provider');
+  localStorage.removeItem(SESSION_HINT_KEY);
 };
 
 const storeUser = (user) => {
@@ -18,6 +24,7 @@ const storeUser = (user) => {
   };
   sessionStorage.setItem('provider', 'backend');
   sessionStorage.setItem('user', JSON.stringify(normalizedUser));
+  localStorage.setItem(SESSION_HINT_KEY, '1');
   return normalizedUser;
 };
 
@@ -136,6 +143,15 @@ class AuthService {
 
   isAuthenticated() {
     return typeof window !== 'undefined' && !!sessionStorage.getItem('user');
+  }
+
+  /**
+   * Whether this browser has ever established a session (survives tab changes,
+   * unlike isAuthenticated()). Guests return false, so callers can skip the
+   * /auth/verify + /auth/refresh round-trip that produced console noise.
+   */
+  hasSessionHint() {
+    return typeof window !== 'undefined' && !!localStorage.getItem(SESSION_HINT_KEY);
   }
 
   startRefreshTokenTimer() {

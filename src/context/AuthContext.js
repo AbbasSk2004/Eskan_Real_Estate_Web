@@ -33,6 +33,9 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('user', JSON.stringify(userData));
+        // Mirrors storeUser(): marks that a session exists so other tabs (and
+        // later visits) know to verify the cookie instead of skipping it.
+        localStorage.setItem('has_session', '1');
       }
     } else {
       setUser(null);
@@ -41,6 +44,9 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem('refresh_token');
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('provider');
+        // Without this, an expired session would keep re-probing /auth/verify
+        // on every page load forever.
+        localStorage.removeItem('has_session');
       }
     }
   }, []);
@@ -149,12 +155,18 @@ export const AuthProvider = ({ children }) => {
         }
 
         // Verify the HttpOnly cookie server-side (rotates via /auth/refresh
-        // when the access cookie has expired).
-        const sessionUser = await authService.restoreSession();
-        if (sessionUser) {
-          updateUserState(sessionUser);
+        // when the access cookie has expired). Skipped for visitors who have
+        // never logged in — they have no cookie to verify, so the request could
+        // only ever 401 and spam the console.
+        if (authService.hasSessionHint()) {
+          const sessionUser = await authService.restoreSession();
+          if (sessionUser) {
+            updateUserState(sessionUser);
+          } else {
+            // No valid session, clear any stale data
+            updateUserState(null);
+          }
         } else {
-          // No valid session, clear any stale data
           updateUserState(null);
         }
       } catch (err) {

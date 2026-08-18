@@ -142,16 +142,18 @@ const PropertyCarousel = ({ initialProperties }) => {
                       ? `${property.city}, ${property.governate}`
                       : 'Location available on request'}
                   </p>
-                  <p className="price mb-3">
-                    <i className="fas fa-tag me-2"></i>
-                    {formatPrice(property.price)}
-                  </p>
-                  <Link
-                    href={`/properties/${property.slug || property.id}`}
-                    className="btn btn-outline-light"
-                  >
-                    View Details
-                  </Link>
+                  <div className="caption-actions">
+                    <p className="price mb-3">
+                      <i className="fas fa-tag me-2"></i>
+                      {formatPrice(property.price)}
+                    </p>
+                    <Link
+                      href={`/properties/${property.slug || property.id}`}
+                      className="btn btn-outline-light"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </Carousel.Caption>
             </Carousel.Item>

@@ -11,10 +11,22 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .property-gallery {
-    margin-left: 1rem;
-    margin-right: 1rem;
+    /* .property-detail-page already applies 1rem side margins at this
+       breakpoint, so centre here instead of adding a second 1rem indent. */
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: auto;
+  }
+
+  /* flex-basis: 50% would collapse these once align-items: center applies. */
+  .main-image-wrapper,
+  .thumbnails-grid {
+    width: 100%;
+    flex-basis: auto;
   }
 
   .main-image-wrapper {
@@ -75,6 +87,21 @@
 /* Modal styles */
 .gallery-modal {
   background-color: rgba(0,0,0,0.9);
+}
+
+/* The vendored Bootstrap is v5.0.0, which has no `.z-3` utility — so the
+   markup's z-3 on .modal-header did nothing, leaving it at z-index:auto.
+   Bootstrap makes .modal-body position:relative and it comes later in the DOM,
+   so the body painted over the header and swallowed clicks on the close button
+   (the thumbnail bar, which sits after .modal-body, kept working). */
+.gallery-modal .modal-header {
+  z-index: 20;
+}
+
+.gallery-modal .modal-header .btn-close {
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 1;
 }
 
 .gallery-modal img {

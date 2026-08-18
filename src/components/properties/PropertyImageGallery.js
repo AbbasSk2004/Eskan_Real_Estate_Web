@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import 'font-awesome/css/font-awesome.min.css';
 import './PropertyGalleryStyles.css';
 
@@ -28,8 +29,13 @@ const ImageModal = ({ images, currentIndex, title, onClose }) => {
   const goToPrevious = () => setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
   const goToImage = (index) => setActiveIndex(index);
 
-  return (
-    <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}>
+  // Rendered at document.body: as a child of .property-detail-page the
+  // fullscreen overlay was subject to ancestor stacking, which swallowed
+  // clicks on the close button.
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className="modal fade show d-block gallery-modal" style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}>
       <div className="modal-dialog modal-fullscreen">
         <div className="modal-content bg-transparent border-0">
           <div className="modal-header border-0 position-absolute w-100 z-3">
@@ -86,7 +92,8 @@ const ImageModal = ({ images, currentIndex, title, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
