@@ -112,7 +112,7 @@ const SimilarProperties = ({ currentPropertyId, propertyType, city, price, limit
 
       <Slider {...sliderSettings} className="similar-properties-slider">
         {properties.map(property => (
-          <div key={property.id} className="px-2" style={{ maxWidth: '380px' }}>
+          <div key={property.id} className="px-2">
             <PropertyCard property={property} />
           </div>
         ))}

@@ -1,45 +1,86 @@
-.similar-properties {
+/* NOTE: the section element is `.similar-properties-section` (see
+   SimilarProperties.js). These rules previously used `.similar-properties`,
+   which matches no element in the DOM — so every card constraint here was
+   silently dead, which is why the card stretched to the full slide width and
+   grew its own height instead of sharing the track height. */
+
+.similar-properties-section {
   position: relative;
 }
 
-/* Center each slide and give some spacing */
+/* --- Slider track: equal-height slides ------------------------------------ */
+
+.similar-properties-slider .slick-track {
+  display: flex !important;
+  align-items: stretch;
+}
+
+/* `height: inherit` here depended on whatever slick had computed on the track;
+   `auto` lets the flex row do the equalising predictably. */
+.similar-properties-slider .slick-slide {
+  height: auto !important;
+  display: flex !important;
+}
+
+/* react-slick's own wrapper element sits between .slick-slide and our child. */
 .similar-properties-slider .slick-slide > div {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
-/* Ensure cards take full width of their wrapper */
-.similar-properties .card {
+/* .slick-list clips overflow, which cut off the card's drop shadow along the
+   bottom edge and read as the card "merging" into the section. */
+.similar-properties-slider .slick-list {
+  padding-bottom: 6px;
+}
+
+/* --- Card ----------------------------------------------------------------- */
+
+.similar-properties-section .card {
   width: 100%;
-  max-width: 380px; /* wider than default grid card */
+  /* Stops a lone property from stretching across the whole section on desktop
+     (slidesToShow collapses to 1 when there is only one result). */
+  max-width: 380px;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.similar-properties .card-body {
-  flex: 1 1 auto; /* grow to fill available space */
+.similar-properties-section .card-body {
+  flex: 1 1 auto;
 }
 
-.similar-properties-slider .slick-track {
-  display: flex !important; /* make all slides share same flex row height */
-}
-
-/* Each slide should stretch to the track height */
-.similar-properties-slider .slick-slide {
-  height: inherit !important;
-  display: flex !important;
-}
-
-/* Wrapper inside slide also stretches */
-.similar-properties-slider .slick-slide > div {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+/* The card image carries an inline height of 250px from PropertyCard, which is
+   shared with the properties grid — override it only inside this section rather
+   than changing the shared component. */
+.similar-properties-section .card img {
+  height: 220px !important;
 }
 
 @media (max-width: 576px) {
-  .similar-properties .card {
-    max-width: 100% !important;
+  /* 1.5rem of section padding on a ~320px screen left the card very narrow,
+     which forced the title, location and footer labels to wrap. */
+  .similar-properties-section {
+    padding: 1rem !important;
   }
-} 
+
+  .similar-properties-section .card {
+    max-width: 100%;
+  }
+
+  .similar-properties-section .card img {
+    height: 180px !important;
+  }
+
+  /* Three columns share a narrow card; Bootstrap's px-3 (1rem, !important) left
+     roughly 68px of content width and broke "150 m²" onto three lines. */
+  .similar-properties-section .card-footer .col {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .similar-properties-section .card-footer {
+    font-size: 0.75rem;
+  }
+}
