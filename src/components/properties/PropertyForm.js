@@ -564,7 +564,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
 
   return (
-    <div className="container-xxl py-5">
+    <div className="container-xxl py-5 add-property-form">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -875,7 +875,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     
                     {/* Conditionally show standard fields based on property type */}
                     {typeConfig.showStandard.bedrooms && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <input 
                             type="number" 
@@ -894,7 +894,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     )}
                     
                     {typeConfig.showStandard.bathrooms && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <input 
                             type="number" 
@@ -913,7 +913,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     )}
                     
                     {typeConfig.showStandard.livingrooms && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <input 
                             type="number" 
@@ -932,7 +932,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     )}
                     
                     {typeConfig.showStandard.parkingSpaces && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <input 
                             type="number" 
@@ -951,7 +951,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     )}
                     
                     {typeConfig.showStandard.yearBuilt && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <select
                             className="form-select"
@@ -971,7 +971,7 @@ function AddPropertyForm({ onSubmitSuccess }) {
                     )}
                     
                     {typeConfig.showStandard.furnishingStatus && (
-                      <div className="col-md-3">
+                      <div className="col-6 col-md-3">
                         <div className="form-floating">
                           <select 
                             className="form-select" 

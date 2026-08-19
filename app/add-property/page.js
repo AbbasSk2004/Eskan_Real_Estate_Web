@@ -5,13 +5,10 @@ import PrivateRoute from '../../src/components/auth/PrivateRoute';
 import AddPropertyForm from '../../src/components/properties/PropertyForm';
 
 const AddPropertyPageContent = () => {
-  return (
-    <div className="container-xxl py-5">
-      <div className="container">
-        <AddPropertyForm />
-      </div>
-    </div>
-  );
+  // AddPropertyForm already provides its own `container-xxl > container`
+  // wrapper. Nesting another one here compounded the container + card padding
+  // and collapsed the form into a narrow column on mobile, so render it directly.
+  return <AddPropertyForm />;
 };
 
 export default function AddPropertyPage() {

@@ -84,7 +84,7 @@ const ProfileHeader = ({ onChangePassword, updateUserState }) => {
   } = profileData;
 
   return (
-    <div className="row mb-5">
+    <div className="row mb-5 profile-header">
       <div className="col-12">
         <div className="bg-light rounded p-4">
           <div className="row align-items-center">
@@ -111,7 +111,7 @@ const ProfileHeader = ({ onChangePassword, updateUserState }) => {
                 )}
               </div>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 text-center text-md-start">
               {!editMode ? (
                 <>
                   <h3 className="mb-2">
@@ -191,24 +191,24 @@ const ProfileHeader = ({ onChangePassword, updateUserState }) => {
                 </form>
               )}
             </div>
-            <div className="col-md-3 text-end">
+            <div className="col-md-3">
               {!editMode && (
-                <>
-                  <button 
-                    className="btn btn-outline-primary me-2"
+                <div className="d-flex flex-md-column gap-2 justify-content-center align-items-md-end mt-3 mt-md-0">
+                  <button
+                    className="btn btn-outline-primary flex-fill flex-md-grow-0"
                     onClick={() => setEditMode(true)}
                   >
                     <i className="fa fa-edit me-2"></i>
                     Edit Profile
                   </button>
-                  <button 
-                    className="btn btn-outline-secondary"
+                  <button
+                    className="btn btn-outline-secondary flex-fill flex-md-grow-0"
                     onClick={onChangePassword}
                   >
                     <i className="fa fa-key me-2"></i>
                     Change Password
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>

@@ -176,12 +176,12 @@ const Sidebar = ({
         <div className="sidebar-header p-4 border-bottom">
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center">
-              <div className="icon p-2 me-2">
-                <img 
-                  className="img-fluid" 
-                  src="/img/icon-deal.png" 
-                  alt="Icon" 
-                  style={{ width: '30px', height: '30px' }} 
+              <div className="p-2 me-2">
+                <img
+                  className="img-fluid"
+                  src="/Copilot_20250628_014309.png"
+                  alt="ESKAN logo"
+                  style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                 />
               </div>
               <h5 className="m-0 text-primary">ESKAN</h5>
@@ -248,7 +248,7 @@ const Sidebar = ({
               <li className="nav-item mb-2">
                 <button
                   type="button"
-                  className="nav-link d-flex align-items-center py-2 px-3 text-secondary bg-transparent border-0 w-100 text-start notification-btn"
+                  className="nav-link d-flex align-items-center py-2 px-3 text-dark bg-transparent border-0 w-100 text-start notification-btn"
                   style={{
                     borderRadius: '8px',
                     transition: 'all 0.2s ease',
@@ -278,7 +278,7 @@ const Sidebar = ({
                 {item.label === 'Direct Messages' ? (
                   <button
                     type="button"
-                    className="nav-link d-flex align-items-center py-2 px-3 text-secondary bg-transparent border-0 w-100 text-start"
+                    className="nav-link d-flex align-items-center py-2 px-3 text-dark bg-transparent border-0 w-100 text-start"
                     style={{
                       borderRadius: '8px',
                       transition: 'all 0.2s ease'
@@ -296,7 +296,7 @@ const Sidebar = ({
                     href={item.path}
                     className={`
                       nav-link d-flex align-items-center py-2 px-3
-                      ${pathname === item.path ? 'active bg-primary-soft text-primary' : 'text-secondary'}
+                      ${pathname === item.path ? 'active text-primary' : 'text-dark'}
                     `}
                     style={{
                       borderRadius: '8px',

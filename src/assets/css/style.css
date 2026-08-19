@@ -508,3 +508,204 @@
     border-radius: 0.375rem;
   }
 }
+
+/* --- Mobile sidebar navigation: match the site's green theme, not the orange
+   `secondary`. The vendored Bootstrap compiles `.text-secondary` to `--secondary`
+   (#FF6922), so sidebar links used to read as an intruder colour. Links now use
+   `.text-dark` and turn green on hover / active — the same tints as the navbar.
+   `!important` is required to beat Bootstrap's `.text-dark` / `.bg-transparent`
+   utility `!important`s. --- */
+.sidebar-nav .nav-link {
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-nav .nav-link.text-dark:hover,
+.sidebar-nav .nav-link.text-dark:focus {
+  background: rgba(0, 185, 142, 0.12) !important;
+  color: var(--primary) !important;
+}
+
+.sidebar-nav .nav-link.active {
+  background: rgba(0, 185, 142, 0.18) !important;
+  color: var(--primary) !important;
+}
+
+/* --- Profile page — mobile layout -----------------------------------------
+   Bootstrap ships no responsive button/pill sizing, so these small tweaks keep
+   the header actions and the tab bar each on a single row on narrow phones
+   instead of wrapping. Scoped to the profile so nothing else shrinks. The JSX
+   handles the row/column direction with utilities (flex-fill / flex-nowrap);
+   this only trims the sizing. --- */
+@media (max-width: 575.98px) {
+  /* Edit Profile / Change Password share one row (flex-fill on each). Trim the
+     size so both labels fit side by side on a ~320px screen. */
+  .profile-header .btn {
+    padding: 0.45rem 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  .profile-header .btn .fa {
+    margin-right: 0.35rem !important;
+  }
+
+  /* Overview / My Properties / Favorites stay on one line (flex-nowrap). Stack
+     the icon above a smaller label so three pills fit without clipping. */
+  .custom-nav-link {
+    padding: 0.5rem 0.2rem;
+    font-size: 0.78rem;
+    line-height: 1.15;
+  }
+
+  .custom-nav-link .fa {
+    display: block;
+    margin: 0 auto 0.25rem !important;
+    font-size: 1rem;
+  }
+
+  /* Overview: the two stat cards and the two Quick Actions buttons each share
+     one row (col-6). Trim the button text so "Add New Property" / "Browse
+     Properties" don't wrap awkwardly in the narrow half-width column. Equal
+     height comes from h-100 on the buttons in the JSX. */
+  .overview-tab .card-body .btn {
+    font-size: 0.85rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    white-space: normal;
+  }
+
+  .overview-tab .card-body .btn .fa {
+    margin-right: 0.35rem !important;
+  }
+}
+
+/* --- Add Property form — mobile layout -------------------------------------
+   The form nests `.container-xxl > .container` and then two padded cards
+   (bg-light > bg-white), so on phones ~60px of gutter piled up on each side and
+   the fields collapsed into a narrow column with truncated selects
+   ("Select Governor…"). On mobile we drop the redundant container gutters and
+   trim the card padding to a single ~12px breathing space, so the form uses the
+   full phone width. Section headers and the 2-up detail fields (col-6) are then
+   sized to stay readable. Scoped to `.add-property-form`; desktop is untouched. */
+@media (max-width: 575.98px) {
+  .add-property-form.container-xxl,
+  .add-property-form .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Outer light wrapper + the section-header bars: minimal padding. */
+  .add-property-form .bg-light.rounded {
+    padding: 0.5rem !important;
+  }
+
+  /* The single white form card carries the one real gutter (~12px). */
+  .add-property-form .bg-white.rounded {
+    padding: 0.75rem !important;
+  }
+
+  #propertyForm h4 {
+    font-size: 1.1rem;
+  }
+
+  #propertyForm .form-floating > label {
+    font-size: 0.8rem;
+  }
+}
+
+/* --- Footer — mobile layout ------------------------------------------------
+   On desktop (≥992px) the four sections sit in one airy row. Below that they
+   stack, and the spacing meant for a horizontal row turned the footer into a
+   very tall column: each section carried the `row g-5` gutter (3rem) PLUS its
+   own `mb-4` (1.5rem) — ~4.5rem of dead space between every block — on top of
+   `pt-5`/`mt-5`/`py-5` (3rem each) and `h5.mb-4` heading margins. This block
+   collapses that vertical rhythm to a tight, scannable stack. Scoped to
+   `.footer` and gated at <992px, so the desktop footer is untouched. --- */
+@media (max-width: 991.98px) {
+  /* Trim the footer's outer top padding/margin. */
+  .footer.pt-5 { padding-top: 2rem !important; }
+  .footer.mt-5 { margin-top: 2rem !important; }
+
+  /* Inner grid container: less top/bottom air. */
+  .footer .container.py-5 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* Collapse the row gutter (was 3rem) and drop the doubled-up column margin,
+     so stacked sections sit ~1.25rem apart instead of ~4.5rem. */
+  .footer .row.g-5 { --bs-gutter-y: 1.25rem; }
+  .footer .row.g-5 > [class*="col-"] { margin-bottom: 0 !important; }
+
+  /* Section headings hug their content. */
+  .footer h5.mb-4 { margin-bottom: 0.75rem !important; }
+
+  /* Quick Links are stacked block links; tighten the per-link gap. */
+  .footer .btn.btn-link { margin-bottom: 2px; }
+
+  /* Copyright bar: less air above/below. */
+  .footer .copyright { padding: 1rem 0; }
+}
+
+/* Phones: the five Quick Links each took a full-width row. Flow them into two
+   columns so the block is ~3 rows instead of 5, and keep the tap targets tall
+   enough (~36px) to stay comfortably tappable. */
+@media (max-width: 575.98px) {
+  .footer .footer-links {
+    column-count: 2;
+    column-gap: 0.75rem;
+  }
+
+  .footer .footer-links .btn.btn-link {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+}
+
+/* --- Footer attribution ("Powered by Skaiki.dev") ---------------------------
+   Brand-gradient wordmark with a soft aura so it reads as a signature rather
+   than another footer link. The glow uses `filter: drop-shadow` (not
+   `text-shadow`) because the gradient is painted through `background-clip: text`
+   with a transparent fill — a text-shadow would bleed through the glyphs.
+   Specificity beats `.footer .copyright a { color: var(--light) }`. --- */
+.footer .copyright .credit-link {
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  transition: filter 0.3s ease, background-position 0.6s ease, opacity 0.3s ease;
+}
+
+/* Gradient fill only where it is supported; elsewhere the solid brand green
+   above stands in, so the label can never render invisible. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .footer .copyright .credit-link {
+    background-image: linear-gradient(90deg, #00B98E 0%, #6FF0CE 50%, #00B98E 100%);
+    background-size: 200% 100%;
+    background-position: 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 6px rgba(0, 185, 142, 0.45));
+  }
+}
+
+/* Hover/focus: sweep the gradient and lift the aura. */
+.footer .copyright .credit-link:hover,
+.footer .copyright .credit-link:focus-visible {
+  background-position: 100% 0;
+  filter: drop-shadow(0 0 11px rgba(0, 185, 142, 0.85));
+  text-decoration: none;
+}
+
+/* Keyboard users still get a visible ring (the gradient replaces underline). */
+.footer .copyright .credit-link:focus-visible {
+  outline: 2px solid rgba(0, 185, 142, 0.7);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer .copyright .credit-link {
+    transition: none;
+  }
+}

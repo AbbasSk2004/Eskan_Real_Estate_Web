@@ -30,9 +30,11 @@
 }
 
 /* .slick-list clips overflow, which cut off the card's drop shadow along the
-   bottom edge and read as the card "merging" into the section. */
+   bottom edge and read as the card "merging" into the section. Bootstrap's
+   `.shadow` reaches ~24px below the card, so 6px was nowhere near enough —
+   16px lets the full elevation render inside the clip box. */
 .similar-properties-slider .slick-list {
-  padding-bottom: 6px;
+  padding-bottom: 16px;
 }
 
 /* --- Card ----------------------------------------------------------------- */
@@ -65,8 +67,18 @@
     padding: 1rem !important;
   }
 
+  /* One card per view (slidesToShow: 1): there is nothing to equalise against,
+     so the global equal-height stretch just inflates a short card to match the
+     tallest of all 12 — the "elongated card with a collapsed bottom" symptom.
+     Let each card size to its own content instead. `!important` is needed to
+     beat the card's Bootstrap `h-100`. */
+  .similar-properties-slider .slick-track {
+    align-items: flex-start;
+  }
+
   .similar-properties-section .card {
     max-width: 100%;
+    height: auto !important;
   }
 
   .similar-properties-section .card img {

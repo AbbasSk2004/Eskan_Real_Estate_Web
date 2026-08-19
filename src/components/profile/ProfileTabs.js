@@ -10,7 +10,7 @@ const ProfileTabs = ({
   return (
     <div className="row mb-4">
       <div className="col-12">
-        <ul className="nav nav-pills nav-fill">
+        <ul className="nav nav-pills nav-fill flex-nowrap">
           <li className="nav-item">
             <button 
               className={`nav-link custom-nav-link ${activeTab === 'overview' ? 'active' : ''}`}

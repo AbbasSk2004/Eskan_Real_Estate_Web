@@ -141,7 +141,7 @@ favoritesCount: 0
         <div className="col-12">
           <div className="row g-4">
             {statsCards.map((stat, index) => (
-              <div key={index} className="col-md-4">
+              <div key={index} className="col-6 col-md-4">
                 <div className="card border-0 shadow-sm h-100">
                   <div className="card-body text-center">
                     <div className={`rounded-circle d-inline-flex align-items-center justify-content-center mb-3 ${stat.iconColor.replace('text-', 'bg-')}`}

@@ -9,6 +9,12 @@ import { toast } from 'react-toastify';
 // Module-level guard to prevent StrictMode duplicate initialization fetches
 const checkedUsers = new Set();
 
+// Footer attribution destination — must come from env, no fallback (same rule
+// as NEXT_PUBLIC_API_URL in axiosClient). NEXT_PUBLIC_* is inlined at build
+// time, so the host (e.g. Vercel) needs this var set at build. If it is unset
+// the attribution is omitted entirely rather than rendering a dead link.
+const CREDIT_URL = process.env.NEXT_PUBLIC_CREDIT_URL;
+
 const Footer = () => {
   const thanksRef = useRef(null);
   const { isAuthenticated, user } = useAuth();
@@ -190,11 +196,13 @@ const Footer = () => {
           </div>
           <div className="col-12 col-sm-6 col-lg-3 mb-4 mb-lg-0 text-center text-sm-start">
             <h5 className="text-white mb-4">Quick Links</h5>
-            <Link href="/about" className="btn btn-link text-white-50">About Us</Link>
-            <Link href="/contact" className="btn btn-link text-white-50">Contact Us</Link>
-            <Link href="/properties" className="btn btn-link text-white-50">Our Properties</Link>
-            <Link href="/privacy" className="btn btn-link text-white-50">Privacy Policy</Link>
-            <Link href="/terms" className="btn btn-link text-white-50">Terms & Condition</Link>
+            <div className="footer-links">
+              <Link href="/about" className="btn btn-link text-white-50">About Us</Link>
+              <Link href="/contact" className="btn btn-link text-white-50">Contact Us</Link>
+              <Link href="/properties" className="btn btn-link text-white-50">Our Properties</Link>
+              <Link href="/privacy" className="btn btn-link text-white-50">Privacy Policy</Link>
+              <Link href="/terms" className="btn btn-link text-white-50">Terms &amp; Condition</Link>
+            </div>
           </div>
           <div className="col-12 col-sm-6 col-lg-3 mb-4 mb-lg-0 text-center text-sm-start">
             <h5 className="text-white mb-4">Rate Us</h5>
@@ -213,6 +221,25 @@ const Footer = () => {
           <div className="row">
             <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
               &copy; <Link className="border-bottom" href="/">Eskan Lebanon</Link>, All Right Reserved.
+              {CREDIT_URL && (
+                <>
+                  {/* Separator only where the credit sits on the same line; on
+                      phones it drops to its own line, so an orphan dot would
+                      look broken. */}
+                  <span className="mx-1 d-none d-sm-inline">&middot;</span>
+                  <span className="d-block d-sm-inline">
+                    Powered by{' '}
+                    <a
+                      className="credit-link"
+                      href={CREDIT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Skaiki.dev
+                    </a>
+                  </span>
+                </>
+              )}
             </div>
             <div className="col-md-6 text-center text-md-end">
               <div className="footer-menu">
