@@ -3,6 +3,20 @@
   margin-left: 5rem;
   margin-right: 5rem;
 }
+
+/* Align the content below the gallery with the gallery itself, at every
+   breakpoint. The gallery is a direct child of .property-detail-page and fills
+   its content box, while everything below sits in a Bootstrap .container that
+   is both gutter-padded AND max-width capped (540/720/960/1140/1320px) and
+   centred — so the card was always narrower than the images. Neutralising both
+   properties makes the two share one edge.
+   Direct-child selector so the error-state .container is left alone. */
+.property-detail-page > .container {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .agent-avatar {
   border: none !important;          /* Remove any border */
   background: transparent !important; /* Remove background */
@@ -99,11 +113,22 @@
     margin-left: 1rem;
     margin-right: 1rem;
   }
-  
-  /* Mobile badge container */
+
+  /* Status and date side by side, left-aligned. They were stacking because the
+     column direction combined with the base align-items: center, which also
+     centred them. */
   .badge-container {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
     gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  /* No room for a third action on a phone; the browser/OS share sheet covers
+     this. Scoped to the header so Share still works elsewhere. */
+  .property-header .share-property {
+    display: none;
   }
 
   /* Two features per row (col-6) leaves little width, so tighten the gap and
