@@ -79,7 +79,10 @@ const ProfileHeader = ({ onChangePassword, updateUserState }) => {
     phone = '',
     profile_photo = '',
     role = 'user',
-    status = 'active',
+    // `status` is intentionally not destructured or rendered: it is presence
+    // (online/offline) for the admin panel, not information the user needs
+    // about themselves. The presence flow itself still runs — see
+    // services/auth.js updateStatus() and the WebSocket presence handlers.
     is_featured = false
   } = profileData;
 
@@ -131,10 +134,6 @@ const ProfileHeader = ({ onChangePassword, updateUserState }) => {
                   <p className="text-muted mb-0">
                     <i className="fa fa-user-tag me-2"></i>
                     Role: {role.charAt(0).toUpperCase() + role.slice(1)}
-                  </p>
-                  <p className="text-muted mb-0">
-                    <i className="fa fa-circle me-2"></i>
-                    Status: {status.charAt(0).toUpperCase() + status.slice(1)}
                   </p>
                 </>
               ) : (
