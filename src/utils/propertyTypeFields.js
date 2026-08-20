@@ -22,7 +22,7 @@ export const PROPERTY_TYPE_FIELDS = {
   },
   Villa: {
     details: [
-      { name: 'gardenArea', label: 'Garden Area (mÂ²)', type: 'number', placeholder: 'e.g. 150', min: 0 },
+      { name: 'gardenArea', label: 'Garden Area (m²)', type: 'number', placeholder: 'e.g. 150', min: 0 },
       { name: 'floors', label: 'Number of Floors', type: 'number', placeholder: 'e.g. 2', min: 1 }
     ],
     features: [
@@ -43,7 +43,7 @@ export const PROPERTY_TYPE_FIELDS = {
     details: [
       { name: 'floor', label: 'Floor', type: 'number', placeholder: 'e.g. 1', min: 0 },
       { name: 'view', label: 'View', type: 'select', options: ['Sea', 'Mountain', 'Garden', 'Pool', 'City', 'Other'] },
-      { name: 'gardenArea', label: 'Garden Area (mÂ²)', type: 'number', placeholder: 'e.g. 50', min: 0 }
+      { name: 'gardenArea', label: 'Garden Area (m²)', type: 'number', placeholder: 'e.g. 50', min: 0 }
     ],
     features: [
       'airConditioning', 'heating', 'balcony', 'fireplace', 'swimmingPool', 'generator',
@@ -80,7 +80,7 @@ export const PROPERTY_TYPE_FIELDS = {
   Retail: {
     details: [
       { name: 'shopFrontWidth', label: 'Shop Front Width (m)', type: 'number', placeholder: 'e.g. 5', min: 0 },
-      { name: 'storageArea', label: 'Storage Area (mÂ²)', type: 'number', placeholder: 'e.g. 20', min: 0 }
+      { name: 'storageArea', label: 'Storage Area (m²)', type: 'number', placeholder: 'e.g. 20', min: 0 }
     ],
     features: [
       'airConditioning', 'security', 'parking', 'generator', 'internet'
@@ -114,7 +114,7 @@ export const PROPERTY_TYPE_FIELDS = {
   },
   Land: {
     details: [
-      { name: 'plotSize', label: 'Plot Size (mÂ²)', type: 'number', placeholder: 'e.g. 500', min: 0 },
+      { name: 'plotSize', label: 'Plot Size (m²)', type: 'number', placeholder: 'e.g. 500', min: 0 },
       { 
         name: 'landType', 
         label: 'Land Type', 
@@ -217,7 +217,7 @@ export const COMMON_FEATURES = {
 export const CARD_FIELD_ICONS = {
   bedrooms: { icon: 'king_bed', label: 'Bed' },
   bathrooms: { icon: 'bathtub', label: 'Bath' },
-  area: { icon: 'square_foot', label: 'mÂ²' },
+  area: { icon: 'square_foot', label: 'm²' },
   parkingSpaces: { icon: 'directions_car', label: 'Parking' },
   meetingRooms: { icon: 'meeting_room', label: 'Meeting' },
   shopFrontWidth: { icon: 'storefront', label: 'Shop Front' },
